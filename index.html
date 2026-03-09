@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Element Pro Builder</title>
+    <title>Element Lab Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
         <header>
             <h1>Element Builder</h1>
             <div class="display-box" id="result">Select 2 Elements</div>
-            <p id="feedback" class="feedback-text">Awaiting reaction...</p>
+            <p id="feedback" class="feedback-text">Tap elements below to start</p>
         </header>
 
         <div class="lab-area">
@@ -20,15 +20,17 @@
             <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
         </div>
 
-        <div id="element-grid" class="grid">
-            </div>
+        <div id="element-grid" class="grid"></div>
 
-        <button onclick="clearAll()" class="clear-btn">Reset Lab</button>
+        <div class="controls">
+            <button onclick="clearAll()" class="btn-secondary">Reset Slots</button>
+            <button onclick="forceUpdate()" class="btn-update">Force Update App</button>
+        </div>
     </div>
 
     <script>
-        // Full 118 Element Data: [Symbol, Name, Valency, Type (m=metal, nm=non-metal, n=noble)]
-        const elements = [
+        // [Symbol, Name, Valency, Type: m=metal, nm=non-metal, n=noble]
+        const data = [
             ["H","Hydrogen",1,"nm"],["He","Helium",0,"n"],["Li","Lithium",1,"m"],["Be","Beryllium",2,"m"],["B","Boron",3,"m"],["C","Carbon",4,"nm"],["N","Nitrogen",-3,"nm"],["O","Oxygen",-2,"nm"],["F","Fluorine",-1,"nm"],["Ne","Neon",0,"n"],
             ["Na","Sodium",1,"m"],["Mg","Magnesium",2,"m"],["Al","Aluminum",3,"m"],["Si","Silicon",4,"m"],["P","Phosphorus",-3,"nm"],["S","Sulfur",-2,"nm"],["Cl","Chlorine",-1,"nm"],["Ar","Argon",0,"n"],["K","Potassium",1,"m"],["Ca","Calcium",2,"m"],
             ["Sc","Scandium",3,"m"],["Ti","Titanium",4,"m"],["V","Vanadium",5,"m"],["Cr","Chromium",3,"m"],["Mn","Manganese",2,"m"],["Fe","Iron",3,"m"],["Co","Cobalt",2,"m"],["Ni","Nickel",2,"m"],["Cu","Copper",2,"m"],["Zn","Zinc",2,"m"],
@@ -39,52 +41,4 @@
             ["Lu","Lutetium",3,"m"],["Hf","Hafnium",4,"m"],["Ta","Tantalum",5,"m"],["W","Tungsten",6,"m"],["Re","Rhenium",7,"m"],["Os","Osmium",4,"m"],["Ir","Iridium",4,"m"],["Pt","Platinum",4,"m"],["Au","Gold",3,"m"],["Hg","Mercury",2,"m"],
             ["Tl","Thallium",3,"m"],["Pb","Lead",2,"m"],["Bi","Bismuth",3,"m"],["Po","Polonium",2,"m"],["At","Astatine",-1,"nm"],["Rn","Radon",0,"n"],["Fr","Francium",1,"m"],["Ra","Radium",2,"m"],["Ac","Actinium",3,"m"],["Th","Thorium",4,"m"],
             ["Pa","Protactinium",5,"m"],["U","Uranium",6,"m"],["Np","Neptunium",5,"m"],["Pu","Plutonium",4,"m"],["Am","Americium",3,"m"],["Cm","Curium",3,"m"],["Bk","Berkelium",3,"m"],["Cf","Californium",3,"m"],["Es","Einsteinium",3,"m"],["Fm","Fermium",3,"m"],
-            ["Md","Mendelevium",3,"m"],["No","Nobelium",2,"m"],["Lr","Lawrencium",3,"m"],["Rf","Rutherfordium",4,"m"],["Db","Dubnium",5,"m"],["Sg","Seaborgium",6,"m"],["Bh","Bohrium",7,"m"],["Hs","Hassium",8,"m"],["Mt","Meitnerium",0,"n"],["Ds","Darmstadtium",0,"n"],
-            ["Rg","Roentgenium",0,"n"],["Cn","Copernicium",0,"n"],["Nh","Nihonium",0,"n"],["Fl","Flerovium",0,"n"],["Mc","Moscovium",0,"n"],["Lv","Livermorium",0,"n"],["Ts","Tennessine",0,"n"],["Og","Oganesson",0,"n"]
-        ];
-
-        let picked = [null, null];
-
-        function init() {
-            const grid = document.getElementById('element-grid');
-            elements.forEach(e => {
-                const btn = document.createElement('div');
-                btn.className = `el-btn type-${e[3]}`;
-                btn.innerHTML = `<strong>${e[0]}</strong><br><small>${e[1]}</small>`;
-                btn.onclick = () => select({s:e[0], n:e[1], v:e[2], t:e[3]});
-                grid.appendChild(btn);
-            });
-        }
-
-        function select(el) {
-            if (!picked[0]) { 
-                picked[0] = el; 
-                document.getElementById('s1').innerText = el.s; 
-            } else if (!picked[1]) { 
-                picked[1] = el; 
-                document.getElementById('s2').innerText = el.s; 
-                validate(); 
-            }
-        }
-
-        function validate() {
-            const a = picked[0]; const b = picked[1];
-            const res = document.getElementById('result');
-            const feed = document.getElementById('feedback');
-
-            // 1. Noble Gas Check
-            if (a.t === 'n' || b.t === 'n') {
-                res.innerText = "No Reaction";
-                feed.innerText = "Noble gases have full electron shells and don't bond.";
-                return;
-            }
-
-            // 2. Metal-Metal Check
-            if (a.t === 'm' && b.t === 'm') {
-                res.innerText = "Metallic Alloy";
-                feed.innerText = "Two metals form an alloy, not a chemical compound.";
-                return;
-            }
-
-            // 3. Same Element Check (Except Covalent Non-metals)
-            if (a.s === b.s && a.t === '
+            ["Md","Mendelevium",3,"m"],["No","Nobelium",2,"m"],["Lr","Lawrencium",3,"m"],["Rf","Rutherfordium",4,"m"],["Db","Dubnium",5,"
