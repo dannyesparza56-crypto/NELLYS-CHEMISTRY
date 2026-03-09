@@ -11,7 +11,7 @@
         <header>
             <h1>Element Builder</h1>
             <div class="display-box" id="result">Select 2 Elements</div>
-            <p id="feedback" class="feedback-text">Tap elements below to start</p>
+            <p id="feedback" class="feedback-text">Awaiting reaction...</p>
         </header>
 
         <div class="lab-area">
@@ -20,7 +20,9 @@
             <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
         </div>
 
-        <div id="element-grid" class="grid"></div>
+        <div id="element-grid" class="grid">
+            <p id="loading-msg" style="grid-column: span 4; color: red;">Grid Loading... If you see this, the JS failed.</p>
+        </div>
 
         <div class="controls">
             <button onclick="clearAll()" class="btn-secondary">Reset Slots</button>
@@ -29,8 +31,8 @@
     </div>
 
     <script>
-        // [Symbol, Name, Valency, Type: m=metal, nm=non-metal, n=noble]
-        const data = [
+        // Full 118 Element Data
+        const elData = [
             ["H","Hydrogen",1,"nm"],["He","Helium",0,"n"],["Li","Lithium",1,"m"],["Be","Beryllium",2,"m"],["B","Boron",3,"m"],["C","Carbon",4,"nm"],["N","Nitrogen",-3,"nm"],["O","Oxygen",-2,"nm"],["F","Fluorine",-1,"nm"],["Ne","Neon",0,"n"],
             ["Na","Sodium",1,"m"],["Mg","Magnesium",2,"m"],["Al","Aluminum",3,"m"],["Si","Silicon",4,"m"],["P","Phosphorus",-3,"nm"],["S","Sulfur",-2,"nm"],["Cl","Chlorine",-1,"nm"],["Ar","Argon",0,"n"],["K","Potassium",1,"m"],["Ca","Calcium",2,"m"],
             ["Sc","Scandium",3,"m"],["Ti","Titanium",4,"m"],["V","Vanadium",5,"m"],["Cr","Chromium",3,"m"],["Mn","Manganese",2,"m"],["Fe","Iron",3,"m"],["Co","Cobalt",2,"m"],["Ni","Nickel",2,"m"],["Cu","Copper",2,"m"],["Zn","Zinc",2,"m"],
@@ -38,7 +40,4 @@
             ["Nb","Niobium",5,"m"],["Mo","Molybdenum",6,"m"],["Tc","Technetium",7,"m"],["Ru","Ruthenium",3,"m"],["Rh","Rhodium",3,"m"],["Pd","Palladium",2,"m"],["Ag","Silver",1,"m"],["Cd","Cadmium",2,"m"],["In","Indium",3,"m"],["Sn","Tin",4,"m"],
             ["Sb","Antimony",3,"m"],["Te","Tellurium",-2,"nm"],["I","Iodine",-1,"nm"],["Xe","Xenon",0,"n"],["Cs","Cesium",1,"m"],["Ba","Barium",2,"m"],["La","Lanthanum",3,"m"],["Ce","Cerium",3,"m"],["Pr","Praseodymium",3,"m"],["Nd","Neodymium",3,"m"],
             ["Pm","Promethium",3,"m"],["Sm","Samarium",3,"m"],["Eu","Europium",3,"m"],["Gd","Gadolinium",3,"m"],["Tb","Terbium",3,"m"],["Dy","Dysprosium",3,"m"],["Ho","Holmium",3,"m"],["Er","Erbium",3,"m"],["Tm","Thulium",3,"m"],["Yb","Ytterbium",3,"m"],
-            ["Lu","Lutetium",3,"m"],["Hf","Hafnium",4,"m"],["Ta","Tantalum",5,"m"],["W","Tungsten",6,"m"],["Re","Rhenium",7,"m"],["Os","Osmium",4,"m"],["Ir","Iridium",4,"m"],["Pt","Platinum",4,"m"],["Au","Gold",3,"m"],["Hg","Mercury",2,"m"],
-            ["Tl","Thallium",3,"m"],["Pb","Lead",2,"m"],["Bi","Bismuth",3,"m"],["Po","Polonium",2,"m"],["At","Astatine",-1,"nm"],["Rn","Radon",0,"n"],["Fr","Francium",1,"m"],["Ra","Radium",2,"m"],["Ac","Actinium",3,"m"],["Th","Thorium",4,"m"],
-            ["Pa","Protactinium",5,"m"],["U","Uranium",6,"m"],["Np","Neptunium",5,"m"],["Pu","Plutonium",4,"m"],["Am","Americium",3,"m"],["Cm","Curium",3,"m"],["Bk","Berkelium",3,"m"],["Cf","Californium",3,"m"],["Es","Einsteinium",3,"m"],["Fm","Fermium",3,"m"],
-            ["Md","Mendelevium",3,"m"],["No","Nobelium",2,"m"],["Lr","Lawrencium",3,"m"],["Rf","Rutherfordium",4,"m"],["Db","Dubnium",5,"
+            ["Lu","Lutetium",3,"m"],["
