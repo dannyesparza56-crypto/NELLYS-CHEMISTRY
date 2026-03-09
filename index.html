@@ -3,80 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Element Lab</title>
+    <title>Simple Chem Lab</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1>Element Lab 118</h1>
-            <div class="display-box" id="reaction-result">Select 2 Elements</div>
+            <h1>Element Combiner</h1>
+            <div class="display-box" id="result">Tap 2 Elements</div>
         </header>
 
-        <div class="lab-slots">
-            <div id="slot-1" class="slot" onclick="clearSlot(1)">+</div>
+        <div class="lab-area">
+            <div id="s1" class="slot" onclick="resetSlot(1)">?</div>
             <div class="plus">+</div>
-            <div id="slot-2" class="slot" onclick="clearSlot(2)">+</div>
+            <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
         </div>
 
-        <div class="tabs">
-            <button id="tab-table" class="tab-btn active" onclick="showSection('table')">Table</button>
-            <button id="tab-glossary" class="tab-btn" onclick="showSection('glossary')">Combinations</button>
-        </div>
-
-        <main id="main-content">
-            <div id="periodic-table" class="grid-container">
-                </div>
-            
-            <div id="glossary-section" class="hidden">
-                <h3>Reaction Guide</h3>
-                <div class="glossary-box">
-                    <p><strong>Ionic Bonding:</strong> Occurs between Metals (left side) and Non-metals (right side).</p>
-                    <p><strong>The Zero Rule:</strong> Total charge must equal 0. 
-                        <br>Example: Mg (+2) + Cl (-1) needs two Cl to work → <strong>MgCl₂</strong></p>
-                    <p><strong>Noble Gases:</strong> He, Ne, Ar, Kr, Xe, Rn do not react.</p>
-                </div>
+        <div id="element-grid" class="grid">
             </div>
-        </main>
 
-        <button onclick="clearCache()" class="update-btn">🔄 Reset Lab & Cache</button>
+        <button onclick="location.reload()" class="clear-btn">Clear All</button>
     </div>
 
     <script>
-        // Data for all 118 elements (Symbol, Name, Typical Valency/Charge)
-        const elementsData = [
-            ["H","Hydrogen",1],["He","Helium",0],["Li","Lithium",1],["Be","Beryllium",2],["B","Boron",3],["C","Carbon",4],["N","Nitrogen",-3],["O","Oxygen",-2],["F","Fluorine",-1],["Ne","Neon",0],
-            ["Na","Sodium",1],["Mg","Magnesium",2],["Al","Aluminum",3],["Si","Silicon",4],["P","Phosphorus",-3],["S","Sulfur",-2],["Cl","Chlorine",-1],["Ar","Argon",0],["K","Potassium",1],["Ca","Calcium",2],
-            ["Sc","Scandium",3],["Ti","Titanium",4],["V","Vanadium",5],["Cr","Chromium",3],["Mn","Manganese",2],["Fe","Iron",3],["Co","Cobalt",2],["Ni","Nickel",2],["Cu","Copper",2],["Zn","Zinc",2],
-            ["Ga","Gallium",3],["Ge","Germanium",4],["As","Arsenic",-3],["Se","Selenium",-2],["Br","Bromine",-1],["Kr","Krypton",0],["Rb","Rubidium",1],["Sr","Strontium",2],["Y","Yttrium",3],["Zr","Zirconium",4],
-            ["Nb","Niobium",5],["Mo","Molybdenum",6],["Tc","Technetium",7],["Ru","Ruthenium",3],["Rh","Rhodium",3],["Pd","Palladium",2],["Ag","Silver",1],["Cd","Cadmium",2],["In","Indium",3],["Sn","Tin",4],
-            ["Sb","Antimony",3],["Te","Tellurium",-2],["I","Iodine",-1],["Xe","Xenon",0],["Cs","Cesium",1],["Ba","Barium",2],["La","Lanthanum",3],["Ce","Cerium",3],["Pr","Praseodymium",3],["Nd","Neodymium",3],
-            ["Pm","Promethium",3],["Sm","Samarium",3],["Eu","Europium",3],["Gd","Gadolinium",3],["Tb","Terbium",3],["Dy","Dysprosium",3],["Ho","Holmium",3],["Er","Erbium",3],["Tm","Thulium",3],["Yb","Ytterbium",3],
-            ["Lu","Lutetium",3],["Hf","Hafnium",4],["Ta","Tantalum",5],["W","Tungsten",6],["Re","Rhenium",7],["Os","Osmium",4],["Ir","Iridium",4],["Pt","Platinum",4],["Au","Gold",3],["Hg","Mercury",2],
-            ["Tl","Thallium",3],["Pb","Lead",2],["Bi","Bismuth",3],["Po","Polonium",2],["At","Astatine",-1],["Rn","Radon",0],["Fr","Francium",1],["Ra","Radium",2],["Ac","Actinium",3],["Th","Thorium",4],
-            ["Pa","Protactinium",5],["U","Uranium",6],["Np","Neptunium",5],["Pu","Plutonium",4],["Am","Americium",3],["Cm","Curium",3],["Bk","Berkelium",3],["Cf","Californium",3],["Es","Einsteinium",3],["Fm","Fermium",3],
-            ["Md","Mendelevium",3],["No","Nobelium",2],["Lr","Lawrencium",3],["Rf","Rutherfordium",4],["Db","Dubnium",5],["Sg","Seaborgium",6],["Bh","Bohrium",7],["Hs","Hassium",8],["Mt","Meitnerium",0],["Ds","Darmstadtium",0],
-            ["Rg","Roentgenium",0],["Cn","Copernicium",0],["Nh","Nihonium",0],["Fl","Flerovium",0],["Mc","Moscovium",0],["Lv","Livermorium",0],["Ts","Tennessine",0],["Og","Oganesson",0]
+        // The most common elements for daily compounds
+        const simpleElements = [
+            { s: "H", n: "Hydrogen", v: 1 }, { s: "O", n: "Oxygen", v: -2 },
+            { s: "Na", n: "Sodium", v: 1 }, { s: "Cl", n: "Chlorine", v: -1 },
+            { s: "C", n: "Carbon", v: 4 }, { s: "Fe", n: "Iron", v: 3 },
+            { s: "Mg", n: "Magnesium", v: 2 }, { s: "S", n: "Sulfur", v: -2 },
+            { s: "Al", n: "Aluminum", v: 3 }, { s: "N", n: "Nitrogen", v: -3 },
+            { s: "He", n: "Helium", v: 0 }, { s: "Ca", n: "Calcium", v: 2 }
         ];
 
-        let selected = [null, null];
+        let picked = [null, null];
 
-        function initTable() {
-            const grid = document.getElementById('periodic-table');
-            elementsData.forEach(data => {
-                const btn = document.createElement('div');
-                btn.className = 'element-card';
-                btn.innerHTML = `<strong>${data[0]}</strong><br><small>${data[1]}</small>`;
-                btn.onclick = () => selectElement({symbol: data[0], name: data[1], valency: data[2]});
-                grid.appendChild(btn);
+        function buildGrid() {
+            const grid = document.getElementById('element-grid');
+            simpleElements.forEach(el => {
+                const div = document.createElement('div');
+                div.className = 'el-btn';
+                div.innerHTML = `<strong>${el.s}</strong><br><small>${el.n}</small>`;
+                div.onclick = () => pick(el);
+                grid.appendChild(div);
             });
         }
 
-        function selectElement(el) {
-            if (!selected[0]) { 
-                selected[0] = el; 
-                document.getElementById('slot-1').innerText = el.symbol; 
-            } else if (!selected[1]) { 
-                selected[1] = el; 
-                document.getElementById('slot
+        function pick(el) {
+            if (!picked[0]) { 
+                picked[0] = el; 
+                document.getElementById('s1').innerText = el.s; 
+            } else if (!picked[1]) { 
+                picked[1] = el; 
+                document.getElementById('s2').innerText = el.s; 
+                combine(); 
+            }
+        }
+
+        function combine() {
+            const a = picked[0];
+            const b = picked[1];
+            const res = document.getElementById('result');
+
+            if (a.v === 0 || b.v === 0) { res.innerText = "No Reaction!"; return; }
+
+            // Cross-over math for the subscripts
+            let valA = Math.abs(b.v);
+            let valB = Math.abs(a.v);
+            
+            // Simplify (2 and 2 becomes 1 and 1)
+            if (valA === valB) { valA = 1; valB = 1; }
+
+            const subA = valA === 1 ? "" : valA;
+            const subB = valB === 1 ? "" : valB;
+
+            res.innerHTML = `Result: ${a.s}${subA}${b.s}${subB}`;
+        }
+
+        function resetSlot(n) {
+            picked[n-1] = null;
+            document.getElementById(`s${n}`).innerText = "?";
+            document.getElementById('result').innerText = "Tap 2 Elements";
+        }
+
+        buildGrid();
+    </script>
+</body>
+</html>
