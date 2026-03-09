@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element Lab PWA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Element Lab</h1>
+            <div class="display-box" id="reaction-result">Select 2 Elements to React</div>
+        </header>
+
+        <div class="lab-slots">
+            <div id="slot-1" class="slot" onclick="clearSlot(1)">+</div>
+            <div class="plus">+</div>
+            <div id="slot-2" class="slot" onclick="clearSlot(2)">+</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showSection('table')">Table</button>
+            <button class="tab-btn" onclick="showSection('glossary')">Glossary</button>
+        </div>
+
+        <main id="main-content">
+            <div id="periodic-table" class="grid-container">
+                </div>
+            
+            <div id="glossary-section" class="hidden">
+                <h3>Bonding Rules</h3>
+                <ul class="glossary-list">
+                    <li><strong>Alkali Metals (Group 1):</strong> Very reactive, want to lose 1 electron.</li>
+                    <li><strong>Halogens (Group 17):</strong> Very reactive, want to gain 1 electron.</li>
+                    <li><strong>Noble Gases (Group 18):</strong> "The Loners." They have full shells and rarely form compounds.</li>
+                </ul>
+            </div>
+        </main>
+
+        <button onclick="clearCache()" class="update-btn">Update Lab Data</button>
+    </div>
+
+    <script>
+        const elements = [
+            { symbol: 'H', name: 'Hydrogen', charge: 1, color: '#ff6666' },
+            { symbol: 'He', name: 'Helium', charge: 0, color: '#ffcc99' },
+            { symbol: 'Li', name: 'Lithium', charge: 1, color: '#cc99ff' },
+            { symbol: 'O', name: 'Oxygen', charge: -2, color: '#66ff66' },
+            { symbol: 'Na', name: 'Sodium', charge: 1, color: '#99ccff' },
+            { symbol: 'Cl', name: 'Chlorine', charge: -1, color: '#ffff99' }
+        ];
+
+        let selected = [null, null];
+
+        function initTable() {
+            const grid = document.getElementById('periodic-table');
+            elements.forEach(el => {
+                const btn = document.createElement('div');
+                btn.className = 'element-card';
+                btn.style.borderColor = el.color;
+                btn.innerHTML = `<strong>${el.symbol}</strong><small>${el.name}</small>`;
+                btn.onclick = () => selectElement(el);
+                grid.appendChild(btn);
+            });
+        }
+
+        function selectElement(el) {
+            if (!selected[0]) { selected[0] = el; document.getElementById('slot-1').innerText = el.symbol; }
+            else if (!selected[1]) { selected[1] = el; document.getElementById('slot-2').innerText = el.symbol; checkReaction(); }
+        }
+
+        function checkReaction() {
+            const e1 = selected[0];
+            const e2 = selected[1];
+            const res = document.getElementById('reaction-result');
+
+            if (e1.charge === 0 || e2.charge === 0) {
+                res.innerText = "No Reaction (Noble Gas)";
+            } else if ((e1.charge + e2.charge) === 0) {
+                res.innerText = `Success! Created ${e1.symbol}${e2.symbol}`;
+            } else {
+                res.innerText = "Unstable Bond - Try Again";
+            }
+        }
+
+        function clearSlot(num) {
+            selected[num-1] = null;
+            document.getElementById(`slot-${num}`).innerText = "+";
+            document.getElementById('reaction-result').innerText = "Select Elements";
+        }
+
+        function showSection(sect) {
+            document.getElementById('periodic-table').classList.toggle('hidden', sect !== 'table');
+            document.getElementById('glossary-section').classList.toggle('hidden', sect !== 'glossary');
+        }
+
+        async function clearCache() {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (let r of regs) await r.unregister();
+            location.reload(true);
+        }
+
+        initTable();
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    </script>
+</body>
+</html>
