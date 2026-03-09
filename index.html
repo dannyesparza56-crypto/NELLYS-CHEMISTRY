@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Element Lab PWA</title>
+    <title>Ultimate Element Lab</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="app-container">
         <header>
-            <h1>Element Lab</h1>
-            <div class="display-box" id="reaction-result">Select 2 Elements to React</div>
+            <h1>Element Lab 118</h1>
+            <div class="display-box" id="reaction-result">Select 2 Elements</div>
         </header>
 
         <div class="lab-slots">
@@ -21,8 +21,8 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="showSection('table')">Table</button>
-            <button class="tab-btn" onclick="showSection('glossary')">Glossary</button>
+            <button id="tab-table" class="tab-btn active" onclick="showSection('table')">Table</button>
+            <button id="tab-glossary" class="tab-btn" onclick="showSection('glossary')">Combinations</button>
         </div>
 
         <main id="main-content">
@@ -30,80 +30,53 @@
                 </div>
             
             <div id="glossary-section" class="hidden">
-                <h3>Bonding Rules</h3>
-                <ul class="glossary-list">
-                    <li><strong>Alkali Metals (Group 1):</strong> Very reactive, want to lose 1 electron.</li>
-                    <li><strong>Halogens (Group 17):</strong> Very reactive, want to gain 1 electron.</li>
-                    <li><strong>Noble Gases (Group 18):</strong> "The Loners." They have full shells and rarely form compounds.</li>
-                </ul>
+                <h3>Reaction Guide</h3>
+                <div class="glossary-box">
+                    <p><strong>Ionic Bonding:</strong> Occurs between Metals (left side) and Non-metals (right side).</p>
+                    <p><strong>The Zero Rule:</strong> Total charge must equal 0. 
+                        <br>Example: Mg (+2) + Cl (-1) needs two Cl to work → <strong>MgCl₂</strong></p>
+                    <p><strong>Noble Gases:</strong> He, Ne, Ar, Kr, Xe, Rn do not react.</p>
+                </div>
             </div>
         </main>
 
-        <button onclick="clearCache()" class="update-btn">Update Lab Data</button>
+        <button onclick="clearCache()" class="update-btn">🔄 Reset Lab & Cache</button>
     </div>
 
     <script>
-        const elements = [
-            { symbol: 'H', name: 'Hydrogen', charge: 1, color: '#ff6666' },
-            { symbol: 'He', name: 'Helium', charge: 0, color: '#ffcc99' },
-            { symbol: 'Li', name: 'Lithium', charge: 1, color: '#cc99ff' },
-            { symbol: 'O', name: 'Oxygen', charge: -2, color: '#66ff66' },
-            { symbol: 'Na', name: 'Sodium', charge: 1, color: '#99ccff' },
-            { symbol: 'Cl', name: 'Chlorine', charge: -1, color: '#ffff99' }
+        // Data for all 118 elements (Symbol, Name, Typical Valency/Charge)
+        const elementsData = [
+            ["H","Hydrogen",1],["He","Helium",0],["Li","Lithium",1],["Be","Beryllium",2],["B","Boron",3],["C","Carbon",4],["N","Nitrogen",-3],["O","Oxygen",-2],["F","Fluorine",-1],["Ne","Neon",0],
+            ["Na","Sodium",1],["Mg","Magnesium",2],["Al","Aluminum",3],["Si","Silicon",4],["P","Phosphorus",-3],["S","Sulfur",-2],["Cl","Chlorine",-1],["Ar","Argon",0],["K","Potassium",1],["Ca","Calcium",2],
+            ["Sc","Scandium",3],["Ti","Titanium",4],["V","Vanadium",5],["Cr","Chromium",3],["Mn","Manganese",2],["Fe","Iron",3],["Co","Cobalt",2],["Ni","Nickel",2],["Cu","Copper",2],["Zn","Zinc",2],
+            ["Ga","Gallium",3],["Ge","Germanium",4],["As","Arsenic",-3],["Se","Selenium",-2],["Br","Bromine",-1],["Kr","Krypton",0],["Rb","Rubidium",1],["Sr","Strontium",2],["Y","Yttrium",3],["Zr","Zirconium",4],
+            ["Nb","Niobium",5],["Mo","Molybdenum",6],["Tc","Technetium",7],["Ru","Ruthenium",3],["Rh","Rhodium",3],["Pd","Palladium",2],["Ag","Silver",1],["Cd","Cadmium",2],["In","Indium",3],["Sn","Tin",4],
+            ["Sb","Antimony",3],["Te","Tellurium",-2],["I","Iodine",-1],["Xe","Xenon",0],["Cs","Cesium",1],["Ba","Barium",2],["La","Lanthanum",3],["Ce","Cerium",3],["Pr","Praseodymium",3],["Nd","Neodymium",3],
+            ["Pm","Promethium",3],["Sm","Samarium",3],["Eu","Europium",3],["Gd","Gadolinium",3],["Tb","Terbium",3],["Dy","Dysprosium",3],["Ho","Holmium",3],["Er","Erbium",3],["Tm","Thulium",3],["Yb","Ytterbium",3],
+            ["Lu","Lutetium",3],["Hf","Hafnium",4],["Ta","Tantalum",5],["W","Tungsten",6],["Re","Rhenium",7],["Os","Osmium",4],["Ir","Iridium",4],["Pt","Platinum",4],["Au","Gold",3],["Hg","Mercury",2],
+            ["Tl","Thallium",3],["Pb","Lead",2],["Bi","Bismuth",3],["Po","Polonium",2],["At","Astatine",-1],["Rn","Radon",0],["Fr","Francium",1],["Ra","Radium",2],["Ac","Actinium",3],["Th","Thorium",4],
+            ["Pa","Protactinium",5],["U","Uranium",6],["Np","Neptunium",5],["Pu","Plutonium",4],["Am","Americium",3],["Cm","Curium",3],["Bk","Berkelium",3],["Cf","Californium",3],["Es","Einsteinium",3],["Fm","Fermium",3],
+            ["Md","Mendelevium",3],["No","Nobelium",2],["Lr","Lawrencium",3],["Rf","Rutherfordium",4],["Db","Dubnium",5],["Sg","Seaborgium",6],["Bh","Bohrium",7],["Hs","Hassium",8],["Mt","Meitnerium",0],["Ds","Darmstadtium",0],
+            ["Rg","Roentgenium",0],["Cn","Copernicium",0],["Nh","Nihonium",0],["Fl","Flerovium",0],["Mc","Moscovium",0],["Lv","Livermorium",0],["Ts","Tennessine",0],["Og","Oganesson",0]
         ];
 
         let selected = [null, null];
 
         function initTable() {
             const grid = document.getElementById('periodic-table');
-            elements.forEach(el => {
+            elementsData.forEach(data => {
                 const btn = document.createElement('div');
                 btn.className = 'element-card';
-                btn.style.borderColor = el.color;
-                btn.innerHTML = `<strong>${el.symbol}</strong><small>${el.name}</small>`;
-                btn.onclick = () => selectElement(el);
+                btn.innerHTML = `<strong>${data[0]}</strong><br><small>${data[1]}</small>`;
+                btn.onclick = () => selectElement({symbol: data[0], name: data[1], valency: data[2]});
                 grid.appendChild(btn);
             });
         }
 
         function selectElement(el) {
-            if (!selected[0]) { selected[0] = el; document.getElementById('slot-1').innerText = el.symbol; }
-            else if (!selected[1]) { selected[1] = el; document.getElementById('slot-2').innerText = el.symbol; checkReaction(); }
-        }
-
-        function checkReaction() {
-            const e1 = selected[0];
-            const e2 = selected[1];
-            const res = document.getElementById('reaction-result');
-
-            if (e1.charge === 0 || e2.charge === 0) {
-                res.innerText = "No Reaction (Noble Gas)";
-            } else if ((e1.charge + e2.charge) === 0) {
-                res.innerText = `Success! Created ${e1.symbol}${e2.symbol}`;
-            } else {
-                res.innerText = "Unstable Bond - Try Again";
-            }
-        }
-
-        function clearSlot(num) {
-            selected[num-1] = null;
-            document.getElementById(`slot-${num}`).innerText = "+";
-            document.getElementById('reaction-result').innerText = "Select Elements";
-        }
-
-        function showSection(sect) {
-            document.getElementById('periodic-table').classList.toggle('hidden', sect !== 'table');
-            document.getElementById('glossary-section').classList.toggle('hidden', sect !== 'glossary');
-        }
-
-        async function clearCache() {
-            const regs = await navigator.serviceWorker.getRegistrations();
-            for (let r of regs) await r.unregister();
-            location.reload(true);
-        }
-
-        initTable();
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-    </script>
-</body>
-</html>
+            if (!selected[0]) { 
+                selected[0] = el; 
+                document.getElementById('slot-1').innerText = el.symbol; 
+            } else if (!selected[1]) { 
+                selected[1] = el; 
+                document.getElementById('slot
