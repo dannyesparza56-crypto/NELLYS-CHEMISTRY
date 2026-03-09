@@ -3,67 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Element Lab</title>
+    <title>Advanced Compound Lab</title>
     <style>
-        body { background: #0d1117; color: #c9d1d9; font-family: sans-serif; text-align: center; padding: 10px; margin: 0; }
-        .box { background: #161b22; max-width: 400px; margin: auto; padding: 20px; border-radius: 12px; border: 1px solid #30363d; }
-        #res { background: #000; padding: 15px; border-radius: 8px; border: 1px solid #58a6ff; color: #ffa657; font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
-        .slots { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 15px 0; }
-        .slot { width: 50px; height: 50px; border: 2px dashed #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 300px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
-        .el { background: #21262d; padding: 10px 2px; border-radius: 6px; border: 1px solid #58a6ff; font-size: 0.8rem; cursor: pointer; color: white; }
-        button { width: 100%; margin-top: 10px; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-clr { background: #30363d; color: white; }
+        :root { --blue: #58a6ff; --orange: #ffa657; --bg: #0d1117; --card: #161b22; }
+        body { background: var(--bg); color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; }
+        .box { background: var(--card); max-width: 450px; margin: auto; padding: 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Compound Display */
+        #res { background: #000; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 10px; min-height: 100px; }
+        .formula { color: var(--orange); font-size: 2rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .details { font-size: 0.85rem; text-align: left; line-height: 1.5; border-top: 1px solid #333; padding-top: 10px; }
+        .details b { color: var(--blue); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+
+        /* Search & Controls */
+        .search-bar { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #30363d; background: #000; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        .slots { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .slot { width: 60px; height: 60px; border: 2px dashed #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: var(--blue); }
+        
+        /* The Grid */
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
+        .el { background: #21262d; padding: 12px 2px; border-radius: 6px; border: 1px solid #444; font-size: 0.75rem; cursor: pointer; transition: 0.2s; }
+        .el:hover { border-color: var(--blue); }
+        .el strong { font-size: 1.1rem; }
+
+        button { width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: #238636; color: white; }
+        .btn-reset { background: #30363d; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h1>Element Builder</h1>
-        <div id="res">Select 2 Elements</div>
-        <div class="slots">
-            <div id="s1" class="slot" onclick="clr(1)">?</div>
-            <div>+</div>
-            <div id="s2" class="slot" onclick="clr(2)">?</div>
+        <div id="res">
+            <span class="formula" id="f-out">Lab Ready</span>
+            <div id="d-out" class="details" style="display:none;"></div>
         </div>
-        <div id="g" class="grid">Loading...</div>
-        <button class="btn-clr" onclick="location.reload()">Reset App</button>
+
+        <input type="text" id="search" class="search-bar" placeholder="Search Elements (e.g. Boron)..." onkeyup="filterElements()">
+
+        <div class="slots">
+            <div id="s1" class="slot" onclick="resetSlot(1)">?</div>
+            <div style="font-size: 1.5rem; color: #888;">+</div>
+            <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
+        </div>
+
+        <div id="g" class="grid"></div>
+        
+        <button onclick="clearAll()">Clear Selection</button>
+        <button class="btn-reset" onclick="location.reload()">Reload Database</button>
     </div>
 
     <script>
-        // Symbol, Name, Valency, Type (m=metal, nm=non-metal, n=noble)
-        const d = "H,Hydro,1,nm|He,Helium,0,n|Li,Lith,1,m|Be,Beryl,2,m|B,Boron,3,m|C,Carb,4,nm|N,Nitro,-3,nm|O,Oxy,-2,nm|F,Fluor,-1,nm|Ne,Neon,0,n|Na,Sod,1,m|Mg,Mag,2,m|Al,Alum,3,m|Si,Silic,4,m|P,Phos,-3,nm|S,Sulf,-2,nm|Cl,Chlor,-1,nm|Ar,Argon,0,n|K,Pot,1,m|Ca,Calc,2,m|Fe,Iron,3,m|Cu,Cop,2,m|Ag,Silv,1,m|Au,Gold,3,m";
+        // COMPONUND GLOSSARY
+        const glossary = {
+            "B4C3": {
+                name: "Boron Carbide (Pseudocubic)",
+                struct: "Exists in different stable forms and pseudocubic.",
+                prop: "Semiconducting, high-hardness, superhard material.",
+                app: "Due to its structure, it is used as a sensor for detecting volatile organic compounds (VOCs)."
+            },
+            "NaCl": {
+                name: "Sodium Chloride",
+                struct: "Face-centered cubic (Halite).",
+                prop: "Ionic solid, highly soluble, transparent crystals.",
+                app: "Essential for biological life, road de-icing, food preservation."
+            },
+            "H2O": {
+                name: "Dihydrogen Monoxide (Water)",
+                struct: "V-shaped polar molecular structure.",
+                prop: "High surface tension, universal solvent.",
+                app: "Biological solvent, temperature regulation, industrial coolant."
+            },
+            "Fe2O3": {
+                name: "Iron(III) Oxide (Rust)",
+                struct: "Trigonal crystal system.",
+                prop: "Ferromagnetic, reddish-brown solid.",
+                app: "Magnetic storage media (tapes/disks), pigments, iron smelting."
+            }
+        };
 
-        let p = [null, null];
+        const raw = "H,Hydrogen,1,nm|He,Helium,0,n|Li,Lithium,1,m|Be,Beryllium,2,m|B,Boron,3,m|C,Carbon,4,nm|N,Nitrogen,-3,nm|O,Oxygen,-2,nm|F,Fluorine,-1,nm|Ne,Neon,0,n|Na,Sodium,1,m|Mg,Magnesium,2,m|Al,Aluminum,3,m|Si,Silicon,4,m|P,Phosphorus,-3,nm|S,Sulfur,-2,nm|Cl,Chlorine,-1,nm|Ar,Argon,0,n|K,Potassium,1,m|Ca,Calcium,2,m|Fe,Iron,3,m|Cu,Copper,2,m|Ag,Silver,1,m|Au,Gold,3,m";
+
+        let picked = [null, null];
 
         function start() {
             const g = document.getElementById('g');
             g.innerHTML = "";
-            d.split("|").forEach(i => {
+            raw.split("|").forEach(i => {
                 const x = i.split(",");
                 const b = document.createElement('div');
                 b.className = 'el';
+                b.setAttribute('data-name', x[1].toLowerCase());
                 b.innerHTML = `<strong>${x[0]}</strong><br>${x[1]}`;
-                b.onclick = () => sel({s:x[0], v:parseInt(x[2]), t:x[3]});
+                b.onclick = () => select({s:x[0], n:x[1], v:parseInt(x[2]), t:x[3]});
                 g.appendChild(b);
             });
         }
 
-        function sel(e) {
-            if (!p[0]) { p[0] = e; document.getElementById('s1').innerText = e.s; }
-            else if (!p[1]) { p[1] = e; document.getElementById('s2').innerText = e.s; react(); }
+        function filterElements() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const items = document.querySelectorAll('.el');
+            items.forEach(it => {
+                it.style.display = it.getAttribute('data-name').includes(query) ? "block" : "none";
+            });
+        }
+
+        function select(e) {
+            if (!picked[0]) { picked[0] = e; document.getElementById('s1').innerText = e.s; }
+            else if (!picked[1]) { picked[1] = e; document.getElementById('s2').innerText = e.s; react(); }
         }
 
         function react() {
-            const a = p[0]; const b = p[1];
-            const r = document.getElementById('res');
-            if (a.t === 'n' || b.t === 'n') { r.innerText = "No Reaction"; return; }
+            const a = picked[0]; const b = picked[1];
+            const fOut = document.getElementById('f-out');
+            const dOut = document.getElementById('d-out');
+
+            if (a.t === 'n' || b.t === 'n') { fOut.innerText = "Inert"; dOut.style.display="none"; return; }
+            
             let vA = Math.abs(b.v); let vB = Math.abs(a.v);
-            const g = (x, y) => y ? g(y, x % y) : x;
-            let c = g(vA, vB); vA/=c; vB/=c;
-            r.innerHTML = `${a.s}${vA==1?'':vA}${b.s}${vB==1?'':vB}`;
+            const gcd = (x, y) => y ? gcd(y, x % y) : x;
+            let c = gcd(vA, vB); vA/=c; vB/=c;
+
+            const formula = `${a.s}${vA==1?'':vA}${b.s}${vB==1?'':vB}`;
+            const reverse = `${b.s}${vB==1?'':vB}${a.s}${vA==1?'':vA}`;
+            
+            fOut.innerHTML = formula.replace(/(\d+)/g, '<sub>$1</sub>');
+
+            const info = glossary[formula] || glossary[reverse];
+            if (info) {
+                dOut.style.display = "block";
+                dOut.innerHTML = `<b>Name:</b> ${info.name}<br><b>Structure:</b> ${info.struct}<br><b>Properties:</b> ${info.prop}<br><b>Applications:</b> ${info.app}`;
+            } else {
+                dOut.style.display = "block";
+                dOut.innerHTML = "<i>Unknown or Unstable Compound Structure.</i>";
+            }
         }
 
-        function clr(n) { p[n-1] = null; document.getElementById('s'+n).innerText = "?"; }
+        function resetSlot(n) { picked[n-1] = null; document.getElementById('s'+n).innerText = "?"; document.getElementById('d-out').style.display="none"; document.getElementById('f-out').innerText="Select Elements"; }
+        function clearAll() { resetSlot(1); resetSlot(2); }
 
         window.onload = start;
     </script>
