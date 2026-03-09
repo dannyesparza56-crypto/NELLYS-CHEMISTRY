@@ -3,94 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Element Lab Pro</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Element Lab</title>
+    <style>
+        body { background: #0d1117; color: #c9d1d9; font-family: sans-serif; text-align: center; padding: 10px; margin: 0; }
+        .box { background: #161b22; max-width: 400px; margin: auto; padding: 20px; border-radius: 12px; border: 1px solid #30363d; }
+        #res { background: #000; padding: 15px; border-radius: 8px; border: 1px solid #58a6ff; color: #ffa657; font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
+        .slots { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 15px 0; }
+        .slot { width: 50px; height: 50px; border: 2px dashed #444; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 300px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
+        .el { background: #21262d; padding: 10px 2px; border-radius: 6px; border: 1px solid #58a6ff; font-size: 0.8rem; cursor: pointer; color: white; }
+        button { width: 100%; margin-top: 10px; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-clr { background: #30363d; color: white; }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>Element Builder</h1>
-            <div class="display-box" id="result">Select 2 Elements</div>
-            <p id="feedback" class="feedback-text">Awaiting reaction...</p>
-        </header>
-
-        <div class="lab-area">
-            <div id="s1" class="slot" onclick="resetSlot(1)">?</div>
-            <div class="plus">+</div>
-            <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
+    <div class="box">
+        <h1>Element Builder</h1>
+        <div id="res">Select 2 Elements</div>
+        <div class="slots">
+            <div id="s1" class="slot" onclick="clr(1)">?</div>
+            <div>+</div>
+            <div id="s2" class="slot" onclick="clr(2)">?</div>
         </div>
-
-        <div id="element-grid" class="grid">
-            <div id="error-log" style="color: #ff6b6b; padding: 20px; text-align: center;">
-                If you see this, tap "Repair Grid" below.
-            </div>
-        </div>
-
-        <div class="controls">
-            <button onclick="buildGrid()" class="btn-repair">🛠️ Repair / Load Grid</button>
-            <button onclick="clearAll()" class="btn-secondary">Reset Slots</button>
-            <button onclick="forceUpdate()" class="btn-update">Force Update App</button>
-        </div>
+        <div id="g" class="grid">Loading...</div>
+        <button class="btn-clr" onclick="location.reload()">Reset App</button>
     </div>
 
     <script>
-        // Simple String Data to prevent syntax errors
-        const rawData = "H,Hydrogen,1,nm|He,Helium,0,n|Li,Lithium,1,m|Be,Beryllium,2,m|B,Boron,3,m|C,Carbon,4,nm|N,Nitrogen,-3,nm|O,Oxygen,-2,nm|F,Fluorine,-1,nm|Ne,Neon,0,n|Na,Sodium,1,m|Mg,Magnesium,2,m|Al,Aluminum,3,m|Si,Silicon,4,m|P,Phosphorus,-3,nm|S,Sulfur,-2,nm|Cl,Chlorine,-1,nm|Ar,Argon,0,n|K,Potassium,1,m|Ca,Calcium,2,m|Sc,Scandium,3,m|Ti,Titanium,4,m|V,Vanadium,5,m|Cr,Chromium,3,m|Mn,Manganese,2,m|Fe,Iron,3,m|Co,Cobalt,2,m|Ni,Nickel,2,m|Cu,Copper,2,m|Zn,Zinc,2,m|Ga,Gallium,3,m|Ge,Germanium,4,m|As,Arsenic,-3,nm|Se,Selenium,-2,nm|Br,Bromine,-1,nm|Kr,Krypton,0,n|Rb,Rubidium,1,m|Sr,Strontium,2,m|Y,Yttrium,3,m|Zr,Zirconium,4,m|Nb,Niobium,5,m|Mo,Molybdenum,6,m|Tc,Technetium,7,m|Ru,Ruthenium,3,m|Rh,Rhodium,3,m|Pd,Palladium,2,m|Ag,Silver,1,m|Cd,Cadmium,2,m|In,Indium,3,m|Sn,Tin,4,m|Sb,Antimony,3,m|Te,Tellurium,-2,nm|I,Iodine,-1,nm|Xe,Xenon,0,n|Cs,Cesium,1,m|Ba,Barium,2,m|La,Lanthanum,3,m|Ce,Cerium,3,m|Pr,Praseodymium,3,m|Nd,Neodymium,3,m|Pm,Promethium,3,m|Sm,Samarium,3,m|Eu,Europium,3,m|Gd,Gadolinium,3,m|Tb,Terbium,3,m|Dy,Dysprosium,3,m|Ho,Holmium,3,m|Er,Erbium,3,m|Tm,Thulium,3,m|Yb,Ytterbium,3,m|Lu,Lutetium,3,m|Hf,Hafnium,4,m|Ta,Tantalum,5,m|W,Tungsten,6,m|Re,Rhenium,7,m|Os,Osmium,4,m|Ir,Iridium,4,m|Pt,Platinum,4,m|Au,Gold,3,m|Hg,Mercury,2,m|Tl,Thallium,3,m|Pb,Lead,2,m|Bi,Bismuth,3,m|Po,Polonium,2,m|At,Astatine,-1,nm|Rn,Radon,0,n|Fr,Francium,1,m|Ra,Radium,2,m|Ac,Actinium,3,m|Th,Thorium,4,m|Pa,Protactinium,5,m|U,Uranium,6,m|Np,Neptunium,5,m|Pu,Plutonium,4,m|Am,Americium,3,m|Cm,Curium,3,m|Bk,Berkelium,3,m|Cf,Californium,3,m|Es,Einsteinium,3,m|Fm,Fermium,3,m|Md,Mendelevium,3,m|No,Nobelium,2,m|Lr,Lawrencium,3,m|Rf,Rutherfordium,4,m|Db,Dubnium,5,m|Sg,Seaborgium,6,m|Bh,Bohrium,7,m|Hs,Hassium,8,m|Mt,Meitnerium,0,n|Ds,Darmstadtium,0,n|Rg,Roentgenium,0,n|Cn,Copernicium,0,n|Nh,Nihonium,0,n|Fl,Flerovium,0,n|Mc,Moscovium,0,n|Lv,Livermorium,0,n|Ts,Tennessine,0,n|Og,Oganesson,0,n";
+        // Symbol, Name, Valency, Type (m=metal, nm=non-metal, n=noble)
+        const d = "H,Hydro,1,nm|He,Helium,0,n|Li,Lith,1,m|Be,Beryl,2,m|B,Boron,3,m|C,Carb,4,nm|N,Nitro,-3,nm|O,Oxy,-2,nm|F,Fluor,-1,nm|Ne,Neon,0,n|Na,Sod,1,m|Mg,Mag,2,m|Al,Alum,3,m|Si,Silic,4,m|P,Phos,-3,nm|S,Sulf,-2,nm|Cl,Chlor,-1,nm|Ar,Argon,0,n|K,Pot,1,m|Ca,Calc,2,m|Fe,Iron,3,m|Cu,Cop,2,m|Ag,Silv,1,m|Au,Gold,3,m";
 
-        let picked = [null, null];
+        let p = [null, null];
 
-        function buildGrid() {
-            const grid = document.getElementById('element-grid');
-            grid.innerHTML = ""; // Clear error message
-            
-            const elementArray = rawData.split("|");
-            
-            elementArray.forEach(item => {
-                const details = item.split(",");
-                const btn = document.createElement('div');
-                btn.className = `el-btn type-${details[3]}`;
-                btn.innerHTML = `<strong>${details[0]}</strong><br><small>${details[1]}</small>`;
-                btn.onclick = () => select({s:details[0], n:details[1], v:parseInt(details[2]), t:details[3]});
-                grid.appendChild(btn);
+        function start() {
+            const g = document.getElementById('g');
+            g.innerHTML = "";
+            d.split("|").forEach(i => {
+                const x = i.split(",");
+                const b = document.createElement('div');
+                b.className = 'el';
+                b.innerHTML = `<strong>${x[0]}</strong><br>${x[1]}`;
+                b.onclick = () => sel({s:x[0], v:parseInt(x[2]), t:x[3]});
+                g.appendChild(b);
             });
         }
 
-        function select(el) {
-            if (!picked[0]) {
-                picked[0] = el;
-                document.getElementById('s1').innerText = el.s;
-            } else if (!picked[1]) {
-                picked[1] = el;
-                document.getElementById('s2').innerText = el.s;
-                react();
-            }
+        function sel(e) {
+            if (!p[0]) { p[0] = e; document.getElementById('s1').innerText = e.s; }
+            else if (!p[1]) { p[1] = e; document.getElementById('s2').innerText = e.s; react(); }
         }
 
         function react() {
-            const a = picked[0]; const b = picked[1];
-            const res = document.getElementById('result');
-            const feed = document.getElementById('feedback');
+            const a = p[0]; const b = p[1];
+            const r = document.getElementById('res');
+            if (a.t === 'n' || b.t === 'n') { r.innerText = "No Reaction"; return; }
+            let vA = Math.abs(b.v); let vB = Math.abs(a.v);
+            const g = (x, y) => y ? g(y, x % y) : x;
+            let c = g(vA, vB); vA/=c; vB/=c;
+            r.innerHTML = `${a.s}${vA==1?'':vA}${b.s}${vB==1?'':vB}`;
+        }
 
-            if (a.t === 'n' || b.t === 'n') {
-                res.innerText = "No Reaction";
-                feed.innerText = "Noble gases don't bond.";
-                return;
-            }
+        function clr(n) { p[n-1] = null; document.getElementById('s'+n).innerText = "?"; }
 
-            if (a.t === 'm' && b.t === 'm') {
-                res.innerText = "Metallic Alloy";
-                feed.innerText = "Metals mix into alloys.";
-                return;
-            }
-
-            const gcd = (x, y) => y ? gcd(y, x % y) : x;
-            let valA = Math.abs(b.v);
-            let valB = Math.abs(a.v);
-            let common = gcd(valA, valB);
-            
-            valA /= common; valB /= common;
-            const subA = valA === 1 ? "" : valA;
-            const subB = valB === 1 ? "" : valB;
-
-            res.innerHTML = `${a.s}${subA}${b.s}${subB}`;
-            feed.
+        window.onload = start;
+    </script>
+</body>
+</html>
