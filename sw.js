@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chem-lab-v1';
+const CACHE_NAME = 'chem-lab-v2';
 const ASSETS = ['./', './index.html', './style.css'];
 
 self.addEventListener('install', (e) => {
