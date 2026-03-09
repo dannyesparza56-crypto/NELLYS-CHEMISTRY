@@ -6,29 +6,31 @@
     --text: #c9d1d9;
 }
 
-body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; padding: 10px; margin:0; }
-.app-container { width: 100%; max-width: 400px; text-align: center; background: var(--card); padding: 15px; border-radius: 12px; }
+body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 10px; margin: 0; }
+.app-container { max-width: 400px; margin: auto; text-align: center; background: var(--card); padding: 15px; border-radius: 12px; }
 
-.display-box { background: #000; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); color: var(--orange); font-size: 1.4rem; font-weight: bold; }
-.feedback-text { color: #888; font-size: 0.9rem; margin-top: 5px; min-height: 1.2em; }
+.display-box { background: #000; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); color: var(--orange); font-size: 1.4rem; min-height: 40px; }
 
 .lab-area { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 15px 0; }
-.slot { width: 55px; height: 55px; border: 2px dashed #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; }
+.slot { width: 50px; height: 50px; border: 2px dashed #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
 .grid { 
     display: grid; 
     grid-template-columns: repeat(4, 1fr); 
     gap: 8px; 
-    height: 350px; 
+    max-height: 350px; 
     overflow-y: auto; 
-    padding: 10px; 
-    background: #000;
+    background: #000; 
+    padding: 10px;
     border-radius: 8px;
+    /* Ensure it is visible */
+    min-height: 200px; 
 }
 
-.el-btn { padding: 10px 2px; border-radius: 6px; cursor: pointer; border: 1px solid #333; font-size: 0.75rem; }
-.type-m { background: #1c2d3d; border-color: var(--blue); } /* Metals */
-.type-nm { background: #3d2d1c; border-color: var(--orange); } /* Non-metals */
-.type-n { background: #2d2d2d; border-color: #555; } /* Noble Gases */
+.el-btn { background: #21262d; padding: 10px 5px; border-radius: 6px; border: 1px solid #333; font-size: 0.75rem; cursor: pointer; color: white; }
+.type-m { border-color: var(--blue); }
+.type-nm { border-color: var(--orange); }
 
-.clear-btn { width: 100%; margin-top: 15px; padding: 12px; border: none; border-radius: 8px; background: #238636; color: white; font-weight: bold; cursor: pointer; }
+.controls { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.btn-update { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.btn-secondary { background: #30363d; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; }
