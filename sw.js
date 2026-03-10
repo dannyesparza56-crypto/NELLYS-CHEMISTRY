@@ -1,17 +1,10 @@
-const CACHE_NAME = 'chem-v50';
-const ASSETS = ['./', './index.html', './style.css'];
+const CACHE_NAME = 'omni-lab-v1';
+const ASSETS = ['index.html'];
 
 self.addEventListener('install', (e) => {
-  self.skipWaiting();
-  e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
-});
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((ks) => {
-    return Promise.all(ks.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
-  }));
+  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
+  e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
 });
