@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titan Compound Database</title>
+    <title>Titan Plus: Ultimate Compound Database</title>
     <style>
         :root { --blue: #58a6ff; --green: #69db7c; --orange: #ffa657; --bg: #0d1117; --card: #161b22; }
         body { background: var(--bg); color: #c9d1d9; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; margin: 0; }
         .box { background: var(--card); max-width: 500px; margin: auto; padding: 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
         
-        #res { background: #000; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 12px; min-height: 140px; position: relative; }
+        #res { background: #000; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 12px; min-height: 150px; position: relative; }
         .formula { color: var(--orange); font-size: 2.4rem; font-weight: bold; display: block; margin-bottom: 5px; }
         .type-tag { color: var(--green); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
         .details { font-size: 0.85rem; text-align: left; border-top: 1px solid #333; padding-top: 10px; line-height: 1.5; }
@@ -19,29 +19,28 @@
         .slots { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; }
         .slot { width: 70px; height: 70px; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: var(--blue); cursor: pointer; }
         
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 300px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 320px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
         .el { background: #21262d; padding: 12px 2px; border-radius: 6px; border: 1px solid #333; font-size: 0.75rem; cursor: pointer; color: white; text-align: center; }
         .el:active { transform: scale(0.95); background: var(--blue); }
         .el strong { font-size: 1.2rem; }
 
-        .journal { margin-top: 20px; text-align: left; background: #000; padding: 12px; border-radius: 8px; max-height: 200px; overflow-y: auto; border: 1px solid #30363d; }
-        .journal h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #888; text-transform: uppercase; }
-        .journal-item { border-bottom: 1px solid #222; padding: 6px 0; display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .journal { margin-top: 20px; text-align: left; background: #000; padding: 12px; border-radius: 8px; max-height: 180px; overflow-y: auto; border: 1px solid #30363d; }
+        .journal h3 { margin: 0 0 10px 0; font-size: 0.8rem; color: #888; text-transform: uppercase; }
+        .journal-item { border-bottom: 1px solid #222; padding: 6px 0; display: flex; justify-content: space-between; font-size: 0.8rem; }
 
         button { width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: #238636; color: white; }
-        .btn-copy { position: absolute; top: 10px; right: 10px; padding: 5px 10px; font-size: 0.7rem; background: #30363d; width: auto; margin: 0; }
+        .btn-clear { background: #30363d; }
     </style>
 </head>
 <body>
     <div class="box">
         <div id="res">
-            <button class="btn-copy" onclick="copyResult()">Copy</button>
-            <span id="type-out" class="type-tag">DATABASE READY</span>
-            <span class="formula" id="f-out">SELECT 2</span>
+            <span id="type-out" class="type-tag">SYSTEM READY</span>
+            <span class="formula" id="f-out">COMBINE</span>
             <div id="d-out" class="details" style="display:none;"></div>
         </div>
 
-        <input type="text" id="search" class="search-bar" placeholder="Search Symbol, Name, or Use (e.g. 'rocket')..." onkeyup="filter()">
+        <input type="text" id="search" class="search-bar" placeholder="Search Elements or Applications..." onkeyup="filter()">
 
         <div class="slots">
             <div id="s1" class="slot" onclick="resetSlot(1)">?</div>
@@ -51,52 +50,53 @@
 
         <div id="g" class="grid"></div>
         
-        <button onclick="clearAll()">Clear Slots</button>
+        <button onclick="clearAll()">Clear Selection</button>
 
         <div class="journal">
-            <h3>Discovered Compounds</h3>
-            <div id="history"><i>Your discoveries will appear here...</i></div>
+            <h3>Lab Discovery Log</h3>
+            <div id="history"><i>Awaiting reaction...</i></div>
         </div>
     </div>
 
     <script>
         const glossary = {
-            "B4C3": { name: "Boron Carbide", type: "Superhard", struct: "Icosahedral network", prop: "Extreme hardness (9.5+ Mohs)", app: "VOC sensors, tank armor, nuclear control rods" },
-            "GaAs": { name: "Gallium Arsenide", type: "Semiconductor", struct: "Zincblende lattice", prop: "High electron mobility", app: "Satellite solar cells, laser diodes" },
-            "GaN": { name: "Gallium Nitride", type: "Electronics", struct: "Wurtzite structure", prop: "Wide bandgap", app: "Fast chargers, 5G base stations" },
-            "GaP": { name: "Gallium Phosphide", type: "Optoelectronics", struct: "Zincblende", prop: "Indirect bandgap", app: "Green/Orange LEDs" },
-            "InP": { name: "Indium Phosphide", type: "Telecommunications", struct: "Zincblende", prop: "High velocity transport", app: "Fiber optic laser sources" },
-            "InAs": { name: "Indium Arsenide", type: "Infrared", struct: "Zincblende", prop: "Very high mobility", app: "Infrared detectors, Hall sensors" },
-            "SiC": { name: "Silicon Carbide", type: "Ceramic", struct: "Covalent network", prop: "High thermal conductivity", app: "CNC grinding, EV power inverters" },
-            "Si3N4": { name: "Silicon Nitride", type: "Ceramic", struct: "Trigonal", prop: "Thermal shock resistant", app: "Turbochargers, bearings" },
-            "Al2O3": { name: "Aluminum Oxide", type: "Abrasive", struct: "Corundum", prop: "Hard insulator", app: "Sandpaper, sapphire glass" },
-            "BeO": { name: "Beryllium Oxide", type: "Insulator", struct: "Wurtzite", prop: "High heat conductor", app: "High-power radar, heat sinks" },
-            "N2H4": { name: "Hydrazine", type: "Rocket Fuel", struct: "H2N-NH2", prop: "Highly reactive", app: "Thrusters, emergency power" },
-            "Li3N": { name: "Lithium Nitride", type: "Battery", struct: "Hexagonal", prop: "Ion conductor", app: "Solid-state batteries" },
-            "LiH": { name: "Lithium Hydride", type: "Energy", struct: "Cubic", prop: "Hydrogen source", app: "Shielding, weather balloons" },
-            "NaBH4": { name: "Sodium Borohydride", type: "Reagent", struct: "Cubic", prop: "Hydrogen source", app: "Paper bleaching, lab synthesis" },
-            "AuCl3": { name: "Gold(III) Chloride", type: "Precious", struct: "Monoclinic", prop: "Water soluble", app: "Gold plating, ruby glass" },
-            "AgCl": { name: "Silver Chloride", type: "Optics", struct: "Cubic", prop: "Light sensitive", app: "Electrodes, photochromics" },
-            "AgNO3": { name: "Silver Nitrate", type: "Medical", struct: "Orthorhombic", prop: "Caustic", app: "Cauterizing, film photography" },
-            "CuSO4": { name: "Copper Sulfate", type: "Agricultural", struct: "Triclinic", prop: "Bright blue", app: "Algicide, copper plating" },
-            "NH3": { name: "Ammonia", type: "Industrial", struct: "Trigonal pyramidal", prop: "Pungent base", app: "Fertilizer, refrigeration" },
-            "HCl": { name: "Hydrogen Chloride", type: "Acid", struct: "Linear", prop: "Corrosive gas", app: "Steel pickling, stomach acid" },
-            "HF": { name: "Hydrogen Fluoride", type: "Etchant", struct: "Linear chain", prop: "Corrosive to glass", app: "Glass etching, Teflon production" },
-            "NaOH": { name: "Sodium Hydroxide", type: "Base", struct: "Orthorhombic", prop: "Lye", app: "Soap, drain cleaner" },
-            "KOH": { name: "Potassium Hydroxide", type: "Electrolyte", struct: "Monoclinic", prop: "Caustic", app: "Alkaline batteries" },
-            "SiO2": { name: "Silicon Dioxide", type: "Glass", struct: "Tetrahedral", prop: "Inert", app: "Glass, concrete, oscillators" },
-            "Fe3O4": { name: "Magnetite", type: "Magnetic", struct: "Spinel", prop: "Natural magnet", app: "Magnetic ink, navigation" },
-            "Fe2O3": { name: "Iron Oxide", type: "Pigment", struct: "Trigonal", prop: "Red rust", app: "Polishing, recording tape" },
-            "MgO": { name: "Magnesium Oxide", type: "Refractory", struct: "Cubic", prop: "Heat resistant", app: "Furnace linings, antacids" },
-            "CH4": { name: "Methane", type: "Fuel", struct: "Tetrahedral", prop: "Flammable", app: "Natural gas, rocket fuel" },
-            "CO2": { name: "Carbon Dioxide", type: "Gas", struct: "Linear", prop: "Non-flammable", app: "Fire extinguishers, lasers" },
+            // BORON/CARBON
+            "B4C3": { name: "Boron Carbide", type: "Superhard", struct: "Icosahedral", prop: "Hardness 9.5+", app: "Armor, VOC sensors" },
+            "BC": { name: "Boron Monocarbide", type: "Experimental", struct: "Diamond-like", prop: "Ultra-stable", app: "High-pressure physics" },
+            "BN": { name: "Boron Nitride", type: "Lubricant", struct: "Hexagonal (White Graphite)", prop: "Thermal stability", app: "Crucibles, cosmetics" },
+            
+            // OXIDES (Group III-V & Transition)
+            "Al2O3": { name: "Aluminum Oxide", type: "Abrasive", struct: "Hexagonal", prop: "Refractory", app: "Sandpaper, sapphire glass" },
+            "In2O3": { name: "Indium Oxide", type: "Conductive Oxide", struct: "Cubic", prop: "Transparent", app: "Touchscreens, solar cells" },
+            "Ga2O3": { name: "Gallium Oxide", type: "Power Semiconductor", struct: "Monoclinic", prop: "Ultra-wide bandgap", app: "Power inverters" },
+            "Fe2O3": { name: "Iron(III) Oxide", type: "Pigment", struct: "Trigonal", prop: "Paramagnetic", app: "Rust pigment, magnetic tape" },
+            "Fe3O4": { name: "Magnetite", type: "Magnetic", struct: "Spinel", prop: "Natural magnet", app: "Magnetic ink" },
+            "CuO": { name: "Copper(II) Oxide", type: "Ceramic Pigment", struct: "Monoclinic", prop: "Black solid", app: "Glazes, superconductors" },
+            "Cu2O": { name: "Copper(I) Oxide", type: "Semiconductor", struct: "Cubic", prop: "Red solid", app: "Solar cells, antifouling" },
+            "Ag2O": { name: "Silver Oxide", type: "Battery Material", struct: "Cubic", prop: "High energy", app: "Watch batteries" },
+            "MgO": { name: "Magnesium Oxide", type: "Refractory", struct: "Cubic", prop: "Heat resistant", app: "Kiln lining" },
+            "SiO2": { name: "Silicon Dioxide", type: "Glass", struct: "Tetrahedral network", prop: "Inert", app: "Glass, oscillators" },
+
+            // NITRIDES & PHOSPHIDES
+            "GaN": { name: "Gallium Nitride", type: "Electronics", struct: "Wurtzite", prop: "Efficient", app: "Fast chargers, 5G" },
+            "InN": { name: "Indium Nitride", type: "Optoelectronics", struct: "Wurtzite", prop: "Infrared active", app: "High-efficiency solar" },
+            "AlN": { name: "Aluminum Nitride", type: "Thermal", struct: "Wurtzite", prop: "Heat conductor", app: "LED heat sinks" },
+            "GaP": { name: "Gallium Phosphide", type: "LED", struct: "Zincblende", prop: "Visible light", app: "Green/Orange LEDs" },
+            "InP": { name: "Indium Phosphide", type: "Fiber Optic", struct: "Zincblende", prop: "High speed", app: "Laser diodes" },
+            "AlP": { name: "Aluminum Phosphide", type: "Pesticide", struct: "Zincblende", prop: "Toxic gas source", app: "Grain fumigation" },
+            "GaAs": { name: "Gallium Arsenide", type: "Semiconductor", struct: "Zincblende", prop: "High mobility", app: "Satellite solar" },
+
+            // CHLORIDES/HALIDES
             "NaCl": { name: "Sodium Chloride", type: "Salt", struct: "Cubic", prop: "Electrolyte", app: "Food, road salt" },
-            "CaC2": { name: "Calcium Carbide", type: "Precursor", struct: "Tetragonal", prop: "Gas source", app: "Welding lamps" },
-            "Mg(OH)2": { name: "Magnesium Hydroxide", type: "Medicine", struct: "Hexagonal", prop: "Antacid", app: "Milk of Magnesia" },
             "FeCl3": { name: "Ferric Chloride", type: "Etchant", struct: "Hexagonal", prop: "Corrosive", app: "PCB etching" },
-            "CuCl2": { name: "Copper Chloride", type: "Catalyst", struct: "Monoclinic", prop: "Hygroscopic", app: "Wood preservation" },
-            "LiF": { name: "Lithium Fluoride", type: "Optics", struct: "Cubic", prop: "UV Transparent", app: "UV lenses" },
-            "AlCl3": { name: "Aluminum Chloride", type: "Catalyst", struct: "Monoclinic", prop: "Lewis Acid", app: "Petroleum refining" }
+            "AlCl3": { name: "Aluminum Chloride", type: "Catalyst", struct: "Monoclinic", prop: "Lewis Acid", app: "Petroleum refining" },
+            "AgCl": { name: "Silver Chloride", type: "Optic", struct: "Cubic", prop: "Light sensitive", app: "Electrodes" },
+            
+            // HYDRIDES & FUELS
+            "NH3": { name: "Ammonia", type: "Industrial", struct: "Pyramidal", prop: "Pungent", app: "Fertilizer" },
+            "CH4": { name: "Methane", type: "Fuel", struct: "Tetrahedral", prop: "Flammable", app: "Natural gas" },
+            "HCl": { name: "Hydrogen Chloride", type: "Acid", struct: "Linear", prop: "Corrosive", app: "Stomach acid" },
+            "LiH": { name: "Lithium Hydride", type: "Nuclear", struct: "Cubic", prop: "Hydrogen source", app: "Shielding" }
         };
 
         const elements = "H,Hydrogen,1,nm|He,Helium,0,n|Li,Lithium,1,m|Be,Beryllium,2,m|B,Boron,3,m|C,Carbon,4,nm|N,Nitrogen,-3,nm|O,Oxygen,-2,nm|F,Fluorine,-1,nm|Ne,Neon,0,n|Na,Sodium,1,m|Mg,Magnesium,2,m|Al,Aluminum,3,m|Si,Silicon,4,m|P,Phosphorus,-3,nm|S,Sulfur,-2,nm|Cl,Chlorine,-1,nm|Ar,Argon,0,n|K,Potassium,1,m|Ca,Calcium,2,m|Fe,Iron,3,m|Cu,Copper,2,m|Ag,Silver,1,m|Au,Gold,3,m|As,Arsenic,-3,nm|Ga,Gallium,3,m|In,Indium,3,m";
@@ -132,8 +132,7 @@
         function react() {
             const a = picked[0], b = picked[1];
             const fOut = document.getElementById('f-out'), dOut = document.getElementById('d-out'), tOut = document.getElementById('type-out');
-
-            if (a.t === 'n' || b.t === 'n') { fOut.innerText = "Inert"; tOut.innerText = "Noble Gas"; dOut.style.display="none"; return; }
+            if (a.t === 'n' || b.t === 'n') { fOut.innerText = "Inert"; tOut.innerText = "NO REACTION"; dOut.style.display="none"; return; }
             
             let vA = Math.abs(b.v), vB = Math.abs(a.v);
             const gcd = (x, y) => y ? gcd(y, x % y) : x;
@@ -141,40 +140,32 @@
 
             const formula = `${a.s}${vA==1?'':vA}${b.s}${vB==1?'':vB}`;
             const reverse = `${b.s}${vB==1?'':vB}${a.s}${vA==1?'':vA}`;
-            
             fOut.innerHTML = formula.replace(/(\d+)/g, '<sub>$1</sub>');
 
             const info = glossary[formula] || glossary[reverse];
             if (info) {
                 tOut.innerText = info.type;
                 dOut.style.display = "block";
-                dOut.innerHTML = `<b>Name:</b> ${info.name}<br><b>Structure:</b> ${info.struct}<br><b>Properties:</b> ${info.prop}<br><b>Apps:</b> ${info.app}`;
-                addToJournal(info.name, formula);
+                dOut.innerHTML = `<b>Name:</b> ${info.name}<br><b>Structure:</b> ${info.struct}<br><b>Props:</b> ${info.prop}<br><b>App:</b> ${info.app}`;
+                log(info.name, formula);
             } else {
-                tOut.innerText = "Stable Geometry";
+                tOut.innerText = "Valid Geometry";
                 dOut.style.display = "block";
                 dOut.innerHTML = "<i>Chemical ratio is valid, but specific data not in glossary.</i>";
             }
         }
 
-        function addToJournal(name, formula) {
+        function log(name, formula) {
             const h = document.getElementById('history');
-            if (h.innerText.includes("Your discoveries")) h.innerHTML = "";
+            if (h.innerText.includes("Awaiting")) h.innerHTML = "";
             const item = document.createElement('div');
             item.className = 'journal-item';
             item.innerHTML = `<span>${name}</span> <b>${formula}</b>`;
             h.prepend(item);
         }
 
-        function copyResult() {
-            const text = `${document.getElementById('f-out').innerText} - ${document.getElementById('d-out').innerText}`;
-            navigator.clipboard.writeText(text);
-            alert("Copied to clipboard!");
-        }
-
-        function resetSlot(n) { picked[n-1] = null; document.getElementById('s'+n).innerText = "?"; document.getElementById('d-out').style.display="none"; document.getElementById('f-out').innerText="SELECT 2"; document.getElementById('type-out').innerText="RESET"; }
+        function resetSlot(n) { picked[n-1] = null; document.getElementById('s'+n).innerText = "?"; dOut = document.getElementById('d-out').style.display="none"; document.getElementById('f-out').innerText="COMBINE"; }
         function clearAll() { resetSlot(1); resetSlot(2); }
-
         window.onload = start;
     </script>
 </body>
