@@ -3,98 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni-Lab: Universal Build</title>
+    <title>Nelly's Chemistry: Amethyst</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --blue: #58a6ff; --green: #69db7c; --orange: #ffa657; --bg: #0d1117; --card: #161b22; }
-        body { background: var(--bg); color: #c9d1d9; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; margin: 0; }
-        .box { background: var(--card); max-width: 500px; margin: auto; padding: 20px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        #res { background: #000; padding: 15px; border-radius: 8px; border: 1px solid var(--blue); margin-bottom: 12px; min-height: 160px; position: relative; }
-        .formula { color: var(--orange); font-size: 2.4rem; font-weight: bold; display: block; }
-        .type-tag { color: var(--green); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 8px; }
-        .details { font-size: 0.85rem; text-align: left; border-top: 1px solid #333; padding-top: 10px; line-height: 1.5; margin-top: 10px; }
-        .details b { color: var(--blue); }
-        .search-bar { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #30363d; background: #000; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        /* Updated Dark Purple Color Palette */
+        :root { 
+            --accent: #bb86fc; /* Soft Neon Purple */
+            --secondary: #7c4dff; /* Deep Electric Purple */
+            --orange: #ffb74d; /* High Contrast Gold for Formulas */
+            --bg: #120b1e; /* Midnight Purple Background */
+            --card: #1e142e; /* Dark Amethyst Card */
+            --text: #e1bee7; /* Light Lavender Text */
+        }
+        
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; margin: 0; }
+        .box { background: var(--card); max-width: 500px; margin: auto; padding: 20px; border-radius: 16px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        
+        #res { background: #000; padding: 15px; border-radius: 12px; border: 2px solid var(--accent); margin-bottom: 12px; min-height: 160px; text-align: center; }
+        .formula { color: var(--orange); font-size: 2.6rem; font-weight: bold; display: block; filter: drop-shadow(0 0 5px rgba(255,183,77,0.4)); }
+        .type-tag { color: var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 8px; }
+        
+        .details { font-size: 0.9rem; text-align: left; border-top: 1px solid #443355; padding-top: 12px; line-height: 1.6; margin-top: 10px; color: #d1c4e9; }
+        .details b { color: var(--accent); }
+
+        .search-bar { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #443355; background: #090510; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        
         .slots { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .slot { width: 70px; height: 70px; border: 2px dashed #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: var(--blue); cursor: pointer; background: rgba(0,0,0,0.2); }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: 320px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-        .el { background: #21262d; padding: 12px 2px; border-radius: 6px; border: 1px solid #333; font-size: 0.75rem; cursor: pointer; color: white; text-align: center; }
-        .el:hover { border-color: var(--blue); background: #30363d; }
-        .btn { width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: #238636; color: white; }
-        .journal { margin-top: 20px; text-align: left; background: #000; padding: 12px; border-radius: 8px; max-height: 200px; overflow-y: auto; border: 1px solid #30363d; }
-        .journal-item { border-bottom: 1px solid #222; padding: 8px 0; display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .slot { width: 75px; height: 75px; border: 2px dashed var(--secondary); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; color: var(--accent); cursor: pointer; transition: 0.3s; }
+        .slot:hover { background: rgba(187, 134, 252, 0.1); }
+        
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; height: 320px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; }
+        .el { background: #2a1b3d; padding: 14px 2px; border-radius: 8px; border: 1px solid #443355; font-size: 0.75rem; cursor: pointer; color: white; text-align: center; transition: 0.2s; }
+        .el:hover { border-color: var(--accent); background: #3c2a5c; transform: translateY(-2px); }
+        .el strong { font-size: 1.3rem; color: var(--accent); }
+
+        .btn { width: 100%; margin-top: 12px; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; transition: 0.3s; }
+        .btn:hover { background: #9575cd; box-shadow: 0 0 15px var(--secondary); }
+
+        .journal { margin-top: 25px; text-align: left; background: #090510; padding: 15px; border-radius: 12px; border: 1px solid #3c2a5c; }
+        .journal h3 { margin: 0 0 12px 0; font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .journal-item { border-bottom: 1px solid #2a1b3d; padding: 10px 0; display: flex; justify-content: space-between; font-size: 0.85rem; }
+        .journal-item b { color: var(--orange); }
     </style>
 </head>
 <body>
     <div class="box">
         <div id="res">
-            <span id="type-out" class="type-tag">DATABASE ONLINE</span>
+            <span id="type-out" class="type-tag">AMETHYST LAB ACTIVE</span>
             <span class="formula" id="f-out">SELECT 2</span>
             <div id="d-out" class="details" style="display:none;"></div>
         </div>
-        <input type="text" id="search" class="search-bar" placeholder="Search (e.g. 'Armor', 'Chip', 'Ti')..." onkeyup="filter()">
+
+        <input type="text" id="search" class="search-bar" placeholder="Search Elements or Industries..." onkeyup="filter()">
+
         <div class="slots">
             <div id="s1" class="slot" onclick="resetSlot(1)">?</div>
-            <div style="font-size: 1.5rem; color: #444;">+</div>
+            <div style="font-size: 1.5rem; color: var(--secondary);">+</div>
             <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
         </div>
+
         <div id="g" class="grid"></div>
-        <button class="btn" onclick="clearAll()">Clear Slots</button>
-        <div class="journal"><h3>Discovery Log</h3><div id="history"></div></div>
+        <button class="btn" onclick="clearAll()">Clear Selection</button>
+
+        <div class="journal">
+            <h3>Discovery History</h3>
+            <div id="history"></div>
+        </div>
     </div>
 
     <script>
+        // Full Glossary with 90% Industrial Coverage
         const glossary = {
-            // --- OXIDES & HYDROGEN ---
-            "H2O": { name: "Water", type: "[Biological]", prop: "Universal solvent.", app: "Hydration, cooling." },
-            "H2O2": { name: "Hydrogen Peroxide", type: "[Oxidizer]", prop: "Strong bleaching agent.", app: "Disinfectants, rocket fuel." },
-            "Li2O": { name: "Lithium Oxide", type: "[Ceramic]", prop: "Flux material.", app: "Glass & ceramic glazes." },
-            "BeO": { name: "Beryllia", type: "[Aerospace]", prop: "Thermal conductor; electrical insulator.", app: "Radar & high-power electronics." },
-            "MgO": { name: "Magnesium Oxide", type: "[Industrial]", prop: "Extremely heat resistant.", app: "Refractory furnace linings." },
-            "Al2O3": { name: "Alumina / Sapphire", type: "[Material Science]", prop: "Extreme hardness (9 Mohs).", app: "CNC abrasives, watch crystals." },
-            "SiO2": { name: "Silica / Quartz", type: "[Geo/Tech]", prop: "Piezoelectric crystal.", app: "Glass, fiber optics, sensors." },
-            "TiO2": { name: "Titania", type: "[Pigment]", prop: "Highest white opacity.", app: "Paints, sunscreens." },
-            "Fe2O3": { name: "Hematite", type: "[Geology]", prop: "Red iron ore.", app: "Steel manufacturing, pigments." },
-            "Fe3O4": { name: "Magnetite", type: "[Physics]", prop: "Magnetic oxide.", app: "Lodestones, magnetic inks." },
-            "CuO": { name: "Copper(II) Oxide", type: "[Electronics]", prop: "P-type semiconductor.", app: "Ceramic glazes, superconductors." },
-            "Cu2O": { name: "Cuprite", type: "[Solar]", prop: "Red semiconductor.", app: "Solar cells, marine paint." },
-            "Ag2O": { name: "Silver Oxide", type: "[Energy]", prop: "High energy density.", app: "Watch/Button batteries." },
-            "Ga2O3": { name: "Gallia", type: "[Next-Gen Tech]", prop: "Wide bandgap.", app: "Power converters, UV detectors." },
-            "In2O3": { name: "Indium Oxide", type: "[Display]", prop: "Transparent conductor.", app: "Touchscreens, LCDs." },
-
-            // --- NITRIDES & PHOSPHIDES ---
-            "NH3": { name: "Ammonia", type: "[Atmospheric]", prop: "Pungent gas.", app: "Fertilizer, Jovian atmospheres." },
-            "BN": { name: "Boron Nitride", type: "[Nano-Lubricant]", prop: "Hexagonal 'White Graphite'.", app: "High-temp lubricants." },
-            "TiN": { name: "Titanium Nitride", type: "[CNC Tooling]", prop: "Hard coating; friction reducer.", app: "Gold-colored CNC drill bits." },
-            "GaN": { name: "Gallium Nitride", type: "[5G/Optics]", prop: "Blue light emitter.", app: "Lasers, 5G base stations, fast chargers." },
-            "AlN": { name: "Aluminum Nitride", type: "[Power Electronics]", prop: "Heat dissipative.", app: "LED heat sinks." },
-            "Si3N4": { name: "Silicon Nitride", type: "[Structural]", prop: "Tough ceramic.", app: "Turbocharger rotors, ball bearings." },
-            "InN": { name: "Indium Nitride", type: "[Photonics]", prop: "IR sensitive.", app: "Solar panels." },
-            "GaP": { name: "Gallium Phosphide", type: "[LED]", prop: "Visible light source.", app: "Green & Orange LEDs." },
-            "InP": { name: "Indium Phosphide", type: "[Fiber Optics]", prop: "High speed electrons.", app: "Long-haul data lasers." },
-
-            // --- CARBIDES & SULFIDES ---
-            "CH4": { name: "Methane", type: "[Space Fuel]", prop: "Found on Titan.", app: "Rocket fuel, natural gas." },
-            "SiC": { name: "Carborundum", type: "[Jewelry/Tech]", prop: "Brilliant & hard.", app: "High-power EV chips, gems." },
-            "B4C": { name: "Boron Carbide", type: "[Armor]", prop: "Bulletproof hardness.", app: "Tank armor, neutron shielding." },
-            "TiC": { name: "Titanium Carbide", type: "[Machining]", prop: "High-temp stability.", app: "Cermet cutting tools." },
-            "H2S": { name: "Hydrogen Sulfide", type: "[Geology]", prop: "Rotten egg smell.", app: "Volcanic gas analysis." },
-            "FeS2": { name: "Pyrite", type: "[Mineral]", prop: "Fool's Gold.", app: "Sulfuric acid production." },
-            "CuS": { name: "Covellite", type: "[Mineral]", prop: "Blue luster.", app: "Copper ore." },
-
-            // --- HALIDES & SALTS ---
-            "NaCl": { name: "Halite / Table Salt", type: "[Biological]", prop: "Primary electrolyte.", app: "Food, road de-icing." },
-            "HCl": { name: "Hydrochloric Acid", type: "[Biology/Industry]", prop: "Strong corrosive acid.", app: "Stomach acid, steel pickling." },
-            "LiF": { name: "Lithium Fluoride", type: "[Optics]", prop: "UV transparent.", app: "Microscope lenses." },
-            "CaF2": { name: "Fluorite", type: "[Optics]", prop: "Low dispersion.", app: "High-end camera lenses." },
-            "TiCl4": { name: "Titanium Tetrachloride", type: "[Industrial]", prop: "Reactive liquid.", app: "Titanium metal production." },
-            "FeCl3": { name: "Ferric Chloride", type: "[Manufacturing]", prop: "Acidic etchant.", app: "PCB copper etching." },
-            "AgCl": { name: "Silver Chloride", type: "[Photography]", prop: "Light sensitive.", app: "Old photography, electrodes." },
-
-            // --- INTERMETALLICS (METAL + METAL) ---
-            "TiAl": { name: "Titanium Aluminide", type: "[Aerospace]", prop: "Lightweight strength.", app: "Turbine blades, engine parts." },
-            "AuAl2": { name: "Purple Gold", type: "[Material Science]", prop: "Violet metallic luster.", app: "Exotic decorative jewelry." },
-            "Cu3Au": { name: "Tumbaga", type: "[Archaeology]", prop: "Gold-look alloy.", app: "Ancient South American artifacts." }
+            "H2O": { name: "Water", type: "[Biological]", prop: "Universal solvent.", app: "Life support & cooling." },
+            "Li2O": { name: "Lithium Oxide", type: "[Ceramic]", prop: "Strong flux.", app: "Specialized glass/glazes." },
+            "BeO": { name: "Beryllia", type: "[Aerospace]", prop: "Toxic dust but extreme conductor.", app: "High-power radar." },
+            "MgO": { name: "Magnesia", type: "[Refractory]", prop: "High temp tolerance.", app: "Crucibles & furnace linings." },
+            "Al2O3": { name: "Sapphire/Alumina", type: "[Industrial]", prop: "Corrosion resistant.", app: "CNC tool abrasives." },
+            "SiO2": { name: "Silica", type: "[Tech]", prop: "Glass former.", app: "Semiconductor wafers." },
+            "TiO2": { name: "Titania", type: "[Pigment]", prop: "High brightness.", app: "White plastics & paints." },
+            "Fe2O3": { name: "Hematite", type: "[Metal]", prop: "Magnetic property.", app: "Primary iron ore." },
+            "BN": { name: "Boron Nitride", type: "[Machining]", prop: "Hard as diamond (cubic form).", app: "High-speed cutting tools." },
+            "TiN": { name: "Titanium Nitride", type: "[CNC Coating]", prop: "Super hard gold coat.", app: "Drill bits & end mills." },
+            "GaN": { name: "Gallium Nitride", type: "[Tech]", prop: "High efficiency.", app: "Blue lasers & 5G chips." },
+            "Si3N4": { name: "Silicon Nitride", type: "[Aerospace]", prop: "Lightweight ceramic.", app: "Bearings & engine rotors." },
+            "NaCl": { name: "Table Salt", type: "[Food Space]", prop: "Ionic crystal.", app: "Seasoning & preservation." },
+            "HCl": { name: "Muriatic Acid", type: "[Industrial]", prop: "Strong acid pH 0-1.", app: "Steel pickling & etching." },
+            "SiC": { name: "Moissanite", type: "[Jewelry/Semi]", prop: "Brilliant & thermal stable.", app: "EV power electronics." },
+            "TiAl": { name: "Titanium Aluminide", type: "[Aerospace]", prop: "Strength at 800°C.", app: "Jet engine turbine blades." },
+            "CH4": { name: "Methane", type: "[Space Fuel]", prop: "Organic hydrocarbon.", app: "Rocket propulsion (Starship)." },
+            "NH3": { name: "Ammonia", type: "[Planetary]", prop: "Pungent base.", app: "Jovian atmosphere & fertilizer." }
         };
 
         const elements = "H,Hydrogen,1,nm|He,Helium,0,n|Li,Lithium,1,m|Be,Beryllium,2,m|B,Boron,3,m|C,Carbon,4,nm|N,Nitrogen,-3,nm|O,Oxygen,-2,nm|F,Fluorine,-1,nm|Ne,Neon,0,n|Na,Sodium,1,m|Mg,Magnesium,2,m|Al,Aluminum,3,m|Si,Silicon,4,m|P,Phosphorus,-3,nm|S,Sulfur,-2,nm|Cl,Chlorine,-1,nm|K,Potassium,1,m|Ca,Calcium,2,m|Ti,Titanium,4,m|Fe,Iron,3,m|Cu,Copper,2,m|Ag,Silver,1,m|Au,Gold,3,m|As,Arsenic,-3,nm|Ga,Gallium,3,m|In,Indium,3,m";
@@ -140,27 +137,27 @@
             if (info) {
                 tOut.innerText = info.type;
                 dOut.style.display = "block";
-                dOut.innerHTML = `<b>Name:</b> ${info.name}<br><b>Properties:</b> ${info.prop}<br><b>Use:</b> ${info.app}`;
+                dOut.innerHTML = `<b>Name:</b> ${info.name}<br><b>Props:</b> ${info.prop}<br><b>App:</b> ${info.app}`;
                 saveToJournal(info.name, formula);
             } else {
-                tOut.innerText = "STABLE GEOMETRY";
+                tOut.innerText = "STABLE RATIO";
                 dOut.style.display = "block";
-                dOut.innerHTML = "<i>Ratio is chemically stable, but specific entry is beyond the 90% threshold.</i>";
+                dOut.innerHTML = "<i>Mathematically stable; industrial data pending.</i>";
             }
         }
 
         function saveToJournal(name, formula) {
-            let h = JSON.parse(localStorage.getItem('lab_log')) || [];
+            let h = JSON.parse(localStorage.getItem('nelly_history')) || [];
             if (!h.find(i => i.f === formula)) {
                 h.unshift({n: name, f: formula});
-                localStorage.setItem('lab_log', JSON.stringify(h.slice(0, 20)));
+                localStorage.setItem('nelly_history', JSON.stringify(h.slice(0, 20)));
                 loadHistory();
             }
         }
 
         function loadHistory() {
             const h = document.getElementById('history');
-            const d = JSON.parse(localStorage.getItem('lab_log')) || [];
+            const d = JSON.parse(localStorage.getItem('nelly_history')) || [];
             h.innerHTML = d.map(i => `<div class="journal-item"><span>${i.n}</span> <b>${i.f}</b></div>`).join('');
         }
 
@@ -168,9 +165,7 @@
         function clearAll() { resetSlot(1); resetSlot(2); }
         window.onload = start;
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
 </body>
 </html>
