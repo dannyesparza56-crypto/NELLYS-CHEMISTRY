@@ -1,0 +1,9 @@
+{
+  "name": "Omni-Lab",
+  "short_name": "OmniLab",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#58a6ff",
+  "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/1048/1048966.png", "sizes": "512x512", "type": "image/png" }]
+}
