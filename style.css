@@ -1,75 +1,54 @@
-// ADVANCED COMPOUND GLOSSARY
-        const glossary = {
-            "B4C3": {
-                name: "Boron Carbide (Pseudocubic)",
-                struct: "Exists in different stable forms and pseudocubic.",
-                prop: "Semiconducting, high-hardness, superhard material.",
-                app: "Used as a sensor for detecting volatile organic compounds (VOCs)."
-            },
-            "Al2O3": {
-                name: "Aluminum Oxide (Alumina)",
-                struct: "Hexagonal close-packed (Corundum).",
-                prop: "Extreme hardness, high melting point, electrical insulator.",
-                app: "Abrasives for CNC grinding, spark plug insulators, and body armor."
-            },
-            "SiO2": {
-                name: "Silicon Dioxide (Silica)",
-                struct: "Tetrahedral network (Quartz).",
-                prop: "High thermal shock resistance, chemically inert.",
-                app: "Glass manufacturing, semiconductor substrates, and concrete."
-            },
-            "Fe2O3": {
-                name: "Iron(III) Oxide (Rust)",
-                struct: "Trigonal crystal system.",
-                prop: "Ferromagnetic, reddish-brown solid.",
-                app: "Magnetic storage media, pigments, and iron smelting."
-            },
-            "LiH": {
-                name: "Lithium Hydride",
-                struct: "Face-centered cubic (Salt-like).",
-                prop: "Highly reactive, high hydrogen content by weight.",
-                app: "Shielding in nuclear reactors and as a portable hydrogen source."
-            },
-            "MgO": {
-                name: "Magnesium Oxide (Magnesia)",
-                struct: "Cubic (Halite structure).",
-                prop: "Refractory material, physically and chemically stable at high heat.",
-                app: "Crucibles for melting metals, heating elements, and fireproofing."
-            },
-            "CaF2": {
-                name: "Calcium Fluoride (Fluorite)",
-                struct: "Cubic (Fluorite structure).",
-                prop: "Transparent from UV to Infrared wavelengths.",
-                app: "High-performance camera lenses and window material for lasers."
-            },
-            "NaCl": {
-                name: "Sodium Chloride (Table Salt)",
-                struct: "Cubic crystal lattice.",
-                prop: "Soluble, essential electrolyte.",
-                app: "Food preservation and chemical manufacturing (Chlorine production)."
-            },
-            "H2O": {
-                name: "Dihydrogen Monoxide (Water)",
-                struct: "Bent/Angular molecular geometry.",
-                prop: "Polar solvent, high specific heat capacity.",
-                app: "Life support, industrial cooling, and cleaning."
-            },
-            "CO2": {
-                name: "Carbon Dioxide",
-                struct: "Linear molecular geometry.",
-                prop: "Colorless gas, acidic when dissolved in water.",
-                app: "Fire extinguishers, carbonated beverages, and laser cutting."
-            },
-            "NH3": {
-                name: "Ammonia",
-                struct: "Trigonal pyramidal.",
-                prop: "Pungent smell, highly alkaline, corrosive.",
-                app: "Fertilizers and industrial refrigeration systems."
-            },
-            "CH4": {
-                name: "Methane (Natural Gas)",
-                struct: "Tetrahedral.",
-                prop: "Highly flammable hydrocarbon.",
-                app: "Heating, electricity generation, and rocket fuel."
-            }
-        };
+const glossary = {
+    // --- GROUP III NITRIDES, PHOSPHIDES & ARSENIDES ---
+    "AlN": { name: "Aluminum Nitride", type: "Ceramic", struct: "Wurtzite", prop: "High thermal conductivity", app: "Heat sinks, UV LEDs" },
+    "AlP": { name: "Aluminum Phosphide", type: "Pesticide", struct: "Zincblende", prop: "Reactive with moisture", app: "Grain fumigation" },
+    "AlAs": { name: "Aluminum Arsenide", type: "Semiconductor", struct: "Zincblende", prop: "Lattice-matched to GaAs", app: "Quantum well devices" },
+    "GaN": { name: "Gallium Nitride", type: "Electronics", struct: "Wurtzite", prop: "High efficiency", app: "Fast chargers, 5G" },
+    "GaP": { name: "Gallium Phosphide", type: "Optics", struct: "Zincblende", prop: "Transparent to green light", app: "Green/Orange LEDs" },
+    "GaAs": { name: "Gallium Arsenide", type: "Semiconductor", struct: "Zincblende", prop: "High electron mobility", app: "Solar cells, RF chips" },
+    "InN": { name: "Indium Nitride", type: "Optoelectronics", struct: "Wurtzite", prop: "Narrow bandgap", app: "High-efficiency solar cells" },
+    "InP": { name: "Indium Phosphide", type: "Fiber Optic", struct: "Zincblende", prop: "High speed", app: "Laser diodes, photodetectors" },
+    "InAs": { name: "Indium Arsenide", type: "Infrared", struct: "Zincblende", prop: "High mobility", app: "IR detectors, Hall sensors" },
+
+    // --- THE OXIDE FAMILY (SESQUIOXIDES & TRANSITION) ---
+    "Al2O3": { name: "Aluminum Oxide", type: "Abrasive", struct: "Hexagonal", prop: "Hard, refractory", app: "Sandpaper, sapphire glass" },
+    "Ga2O3": { name: "Gallium Oxide", type: "Semiconductor", struct: "Monoclinic", prop: "Ultra-wide bandgap", app: "Power electronics" },
+    "In2O3": { name: "Indium Oxide", type: "Conductive Oxide", struct: "Cubic (Bixbyite)", prop: "Transparent/Conductive", app: "Touchscreens, LCDs" },
+    "Fe2O3": { name: "Iron(III) Oxide", type: "Pigment", struct: "Trigonal", prop: "Red-brown rust", app: "Polishing, magnetic tape" },
+    "Fe3O4": { name: "Magnetite", type: "Magnetic", struct: "Spinel", prop: "Naturally magnetic", app: "Magnetic ink, lodestones" },
+    "FeO": { name: "Iron(II) Oxide", type: "Mineral", struct: "Cubic (Halite)", prop: "Black powder", app: "Green glass, pigments" },
+    "CuO": { name: "Copper(II) Oxide", type: "Ceramic", struct: "Monoclinic", prop: "Black solid", app: "Superconductors, glazes" },
+    "Cu2O": { name: "Copper(I) Oxide", type: "Semiconductor", struct: "Cubic", prop: "Red solid", app: "Antifouling paint, solar cells" },
+    "Ag2O": { name: "Silver Oxide", type: "Battery", struct: "Cubic", prop: "High energy density", app: "Button-cell batteries" },
+    "MgO": { name: "Magnesium Oxide", type: "Refractory", struct: "Cubic", prop: "Thermal insulator", app: "Furnace linings, antacids" },
+    "CaO": { name: "Calcium Oxide", type: "Industrial", struct: "Cubic", prop: "Quicklime", app: "Steel making, water treatment" },
+    "BeO": { name: "Beryllium Oxide", type: "Insulator", struct: "Wurtzite", prop: "Toxic/Heat conductor", app: "Radar, high-power electronics" },
+
+    // --- HALIDES & SALTS ---
+    "AlCl3": { name: "Aluminum Chloride", type: "Catalyst", struct: "Monoclinic", prop: "Lewis Acid", app: "Petroleum refining" },
+    "GaCl3": { name: "Gallium Chloride", type: "Reagent", struct: "Monoclinic dimer", prop: "Low melting point", app: "GaAs precursor" },
+    "InCl3": { name: "Indium(III) Chloride", type: "Catalyst", struct: "Monoclinic", prop: "Soluble acid", app: "Organic synthesis" },
+    "FeCl3": { name: "Ferric Chloride", type: "Etchant", struct: "Hexagonal", prop: "Corrosive", app: "PCB etching" },
+    "FeCl2": { name: "Ferrous Chloride", type: "Flocculant", struct: "Hexagonal", prop: "Hygroscopic", app: "Wastewater treatment" },
+    "CuCl2": { name: "Copper(II) Chloride", type: "Catalyst", struct: "Monoclinic", prop: "Blue-green solid", app: "Petroleum refining" },
+    "AgCl": { name: "Silver Chloride", type: "Optics", struct: "Cubic", prop: "Photosensitive", app: "Electrodes, photography" },
+    "NaCl": { name: "Sodium Chloride", type: "Salt", struct: "Cubic", prop: "Essential electrolyte", app: "Food, de-icing" },
+    "LiF": { name: "Lithium Fluoride", type: "Optics", struct: "Cubic", prop: "UV transparent", app: "UV windows/lenses" },
+    "CaF2": { name: "Calcium Fluoride", type: "Optical", struct: "Cubic (Fluorite)", prop: "Low dispersion", app: "High-end camera lenses" },
+
+    // --- BORON & CARBON ---
+    "B4C3": { name: "Boron Carbide", type: "Superhard", struct: "Icosahedral", prop: "Extreme hardness", app: "Armor, VOC sensors" },
+    "BN": { name: "Boron Nitride", type: "Lubricant", struct: "Hexagonal/Cubic", prop: "Thermal stability", app: "Cosmetics, crucibles" },
+    "SiC": { name: "Silicon Carbide", type: "Ceramic", struct: "Covalent network", prop: "Heat resistant", app: "Grinding, EV power" },
+    "CH4": { name: "Methane", type: "Fuel", struct: "Tetrahedral", prop: "Flammable", app: "Natural gas" },
+    "CO2": { name: "Carbon Dioxide", type: "Gas", struct: "Linear", prop: "Non-flammable", app: "Fire extinguishers" },
+    "Si3N4": { name: "Silicon Nitride", type: "Structural", struct: "Trigonal", prop: "Tough ceramic", app: "Bearings, turbochargers" },
+
+    // --- OTHERS ---
+    "NH3": { name: "Ammonia", type: "Industrial", struct: "Pyramidal", prop: "Alkaline gas", app: "Fertilizer" },
+    "H2O": { name: "Water", type: "Solvent", struct: "Bent", prop: "Polar", app: "Life support" },
+    "HCl": { name: "Hydrogen Chloride", type: "Acid", struct: "Linear", prop: "Corrosive", app: "Stomach acid" },
+    "LiH": { name: "Lithium Hydride", type: "Energy", struct: "Cubic", prop: "Hydrogen source", app: "Nuclear shielding" },
+    "Mg(OH)2": { name: "Magnesium Hydroxide", type: "Medicine", struct: "Hexagonal", prop: "Antacid", app: "Milk of Magnesia" },
+    "NaOH": { name: "Sodium Hydroxide", type: "Base", struct: "Orthorhombic", prop: "Lye", app: "Soap making" }
+};
