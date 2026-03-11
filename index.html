@@ -3,169 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's Chemistry: Amethyst</title>
+    <title>Nelly's Elemingle PWA</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* Updated Dark Purple Color Palette */
         :root { 
-            --accent: #bb86fc; /* Soft Neon Purple */
-            --secondary: #7c4dff; /* Deep Electric Purple */
-            --orange: #ffb74d; /* High Contrast Gold for Formulas */
-            --bg: #120b1e; /* Midnight Purple Background */
-            --card: #1e142e; /* Dark Amethyst Card */
-            --text: #e1bee7; /* Light Lavender Text */
+            --accent: #bb86fc; 
+            --secondary: #7c4dff; 
+            --orange: #ffb74d; 
+            --bg: #120b1e; 
+            --card: #1e142e; 
+            --text: #e1bee7; 
         }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 20px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
         
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; margin: 0; }
-        .box { background: var(--card); max-width: 500px; margin: auto; padding: 20px; border-radius: 16px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-        
-        #res { background: #000; padding: 15px; border-radius: 12px; border: 2px solid var(--accent); margin-bottom: 12px; min-height: 160px; text-align: center; }
-        .formula { color: var(--orange); font-size: 2.6rem; font-weight: bold; display: block; filter: drop-shadow(0 0 5px rgba(255,183,77,0.4)); }
-        .type-tag { color: var(--accent); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 8px; }
-        
-        .details { font-size: 0.9rem; text-align: left; border-top: 1px solid #443355; padding-top: 12px; line-height: 1.6; margin-top: 10px; color: #d1c4e9; }
-        .details b { color: var(--accent); }
+        #game-display { background: #000; padding: 20px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; text-align: center; min-height: 180px; }
+        .mystery-hint { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
+        .element-card { font-size: 3rem; font-weight: bold; color: var(--orange); margin: 10px 0; }
+        .stats { font-size: 0.9rem; color: #d1c4e9; line-height: 1.4; }
 
-        .search-bar { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #443355; background: #090510; color: white; margin-bottom: 15px; box-sizing: border-box; }
-        
-        .slots { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .slot { width: 75px; height: 75px; border: 2px dashed var(--secondary); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; color: var(--accent); cursor: pointer; transition: 0.3s; }
-        .slot:hover { background: rgba(187, 134, 252, 0.1); }
-        
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; height: 320px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; }
-        .el { background: #2a1b3d; padding: 14px 2px; border-radius: 8px; border: 1px solid #443355; font-size: 0.75rem; cursor: pointer; color: white; text-align: center; transition: 0.2s; }
-        .el:hover { border-color: var(--accent); background: #3c2a5c; transform: translateY(-2px); }
-        .el strong { font-size: 1.3rem; color: var(--accent); }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; }
+        .btn-low { background: #cf6679; } /* Higher button */
+        .btn-high { background: #03dac6; color: #000; } /* Lower button */
+        .btn-match { background: var(--secondary); grid-column: span 2; }
 
-        .btn { width: 100%; margin-top: 12px; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; transition: 0.3s; }
-        .btn:hover { background: #9575cd; box-shadow: 0 0 15px var(--secondary); }
-
-        .journal { margin-top: 25px; text-align: left; background: #090510; padding: 15px; border-radius: 12px; border: 1px solid #3c2a5c; }
-        .journal h3 { margin: 0 0 12px 0; font-size: 0.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-        .journal-item { border-bottom: 1px solid #2a1b3d; padding: 10px 0; display: flex; justify-content: space-between; font-size: 0.85rem; }
-        .journal-item b { color: var(--orange); }
+        .grid-container { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid #3c2a5c; }
+        .el-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #2a1b3d; font-size: 0.85rem; }
+        .out-of-bounds { opacity: 0.3; text-decoration: line-through; }
     </style>
 </head>
 <body>
     <div class="box">
-        <div id="res">
-            <span id="type-out" class="type-tag">AMETHYST LAB ACTIVE</span>
-            <span class="formula" id="f-out">SELECT 2</span>
-            <div id="d-out" class="details" style="display:none;"></div>
+        <div id="game-display">
+            <span class="mystery-hint" id="hint-text">Find the Mystery Element</span>
+            <div class="element-card" id="current-el">??</div>
+            <div class="stats" id="current-stats">Pick an element below to start narrowing down.</div>
         </div>
 
-        <input type="text" id="search" class="search-bar" placeholder="Search Elements or Industries..." onkeyup="filter()">
-
-        <div class="slots">
-            <div id="s1" class="slot" onclick="resetSlot(1)">?</div>
-            <div style="font-size: 1.5rem; color: var(--secondary);">+</div>
-            <div id="s2" class="slot" onclick="resetSlot(2)">?</div>
+        <div class="controls">
+            <button class="btn btn-low" onclick="guess('lower')">← Too Low</button>
+            <button class="btn btn-high" onclick="guess('higher')">Too High →</button>
+            <button class="btn btn-match" onclick="guess('match')">↑ IT'S A MATCH!</button>
         </div>
 
-        <div id="g" class="grid"></div>
-        <button class="btn" onclick="clearAll()">Clear Selection</button>
-
-        <div class="journal">
-            <h3>Discovery History</h3>
-            <div id="history"></div>
-        </div>
+        <div class="grid-container" id="element-list"></div>
+        <button class="btn" style="background:#443355; margin-top:10px; width:100%" onclick="resetGame()">New Game</button>
     </div>
 
     <script>
-        // Full Glossary with 90% Industrial Coverage
-        const glossary = {
-            "H2O": { name: "Water", type: "[Biological]", prop: "Universal solvent.", app: "Life support & cooling." },
-            "Li2O": { name: "Lithium Oxide", type: "[Ceramic]", prop: "Strong flux.", app: "Specialized glass/glazes." },
-            "BeO": { name: "Beryllia", type: "[Aerospace]", prop: "Toxic dust but extreme conductor.", app: "High-power radar." },
-            "MgO": { name: "Magnesia", type: "[Refractory]", prop: "High temp tolerance.", app: "Crucibles & furnace linings." },
-            "Al2O3": { name: "Sapphire/Alumina", type: "[Industrial]", prop: "Corrosion resistant.", app: "CNC tool abrasives." },
-            "SiO2": { name: "Silica", type: "[Tech]", prop: "Glass former.", app: "Semiconductor wafers." },
-            "TiO2": { name: "Titania", type: "[Pigment]", prop: "High brightness.", app: "White plastics & paints." },
-            "Fe2O3": { name: "Hematite", type: "[Metal]", prop: "Magnetic property.", app: "Primary iron ore." },
-            "BN": { name: "Boron Nitride", type: "[Machining]", prop: "Hard as diamond (cubic form).", app: "High-speed cutting tools." },
-            "TiN": { name: "Titanium Nitride", type: "[CNC Coating]", prop: "Super hard gold coat.", app: "Drill bits & end mills." },
-            "GaN": { name: "Gallium Nitride", type: "[Tech]", prop: "High efficiency.", app: "Blue lasers & 5G chips." },
-            "Si3N4": { name: "Silicon Nitride", type: "[Aerospace]", prop: "Lightweight ceramic.", app: "Bearings & engine rotors." },
-            "NaCl": { name: "Table Salt", type: "[Food Space]", prop: "Ionic crystal.", app: "Seasoning & preservation." },
-            "HCl": { name: "Muriatic Acid", type: "[Industrial]", prop: "Strong acid pH 0-1.", app: "Steel pickling & etching." },
-            "SiC": { name: "Moissanite", type: "[Jewelry/Semi]", prop: "Brilliant & thermal stable.", app: "EV power electronics." },
-            "TiAl": { name: "Titanium Aluminide", type: "[Aerospace]", prop: "Strength at 800°C.", app: "Jet engine turbine blades." },
-            "CH4": { name: "Methane", type: "[Space Fuel]", prop: "Organic hydrocarbon.", app: "Rocket propulsion (Starship)." },
-            "NH3": { name: "Ammonia", type: "[Planetary]", prop: "Pungent base.", app: "Jovian atmosphere & fertilizer." }
-        };
+        const elements = [
+            {n:1, s:"H", name:"Hydrogen", w:1.01}, {n:2, s:"He", name:"Helium", w:4.00},
+            {n:3, s:"Li", name:"Lithium", w:6.94}, {n:4, s:"Be", name:"Beryllium", w:9.01},
+            {n:6, s:"C", name:"Carbon", w:12.01}, {n:8, s:"O", name:"Oxygen", w:16.00},
+            {n:13, s:"Al", name:"Aluminum", w:26.98}, {n:14, s:"Si", name:"Silicon", w:28.08},
+            {n:22, s:"Ti", name:"Titanium", w:47.86}, {n:26, s:"Fe", name:"Iron", w:55.84},
+            {n:79, s:"Au", name:"Gold", w:196.9}
+        ];
 
-        const elements = "H,Hydrogen,1,nm|He,Helium,0,n|Li,Lithium,1,m|Be,Beryllium,2,m|B,Boron,3,m|C,Carbon,4,nm|N,Nitrogen,-3,nm|O,Oxygen,-2,nm|F,Fluorine,-1,nm|Ne,Neon,0,n|Na,Sodium,1,m|Mg,Magnesium,2,m|Al,Aluminum,3,m|Si,Silicon,4,m|P,Phosphorus,-3,nm|S,Sulfur,-2,nm|Cl,Chlorine,-1,nm|K,Potassium,1,m|Ca,Calcium,2,m|Ti,Titanium,4,m|Fe,Iron,3,m|Cu,Copper,2,m|Ag,Silver,1,m|Au,Gold,3,m|As,Arsenic,-3,nm|Ga,Gallium,3,m|In,Indium,3,m";
-        let picked = [null, null];
+        let mysteryIndex, currentIndex, lowerBound = 0, upperBound = 200;
 
-        function start() {
-            const g = document.getElementById('g');
-            elements.split("|").forEach(i => {
-                const x = i.split(",");
-                const b = document.createElement('div');
-                b.className = 'el';
-                b.setAttribute('data-s', `${x[1]} ${x[0]}`.toLowerCase());
-                b.innerHTML = `<strong>${x[0]}</strong><br>${x[1]}`;
-                b.onclick = () => select({s:x[0], n:x[1], v:parseInt(x[2]), t:x[3]});
-                g.appendChild(b);
-            });
-            loadHistory();
+        function resetGame() {
+            mysteryIndex = Math.floor(Math.random() * elements.length);
+            currentIndex = null;
+            lowerBound = 0; upperBound = 200;
+            document.getElementById('hint-text').innerText = "Mystery Element Hidden";
+            document.getElementById('current-el').innerText = "??";
+            renderList();
         }
 
-        function filter() {
-            const q = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.el').forEach(it => {
-                it.style.display = it.getAttribute('data-s').includes(q) ? "block" : "none";
-            });
+        function selectEl(i) {
+            currentIndex = i;
+            const el = elements[i];
+            document.getElementById('current-el').innerText = el.s;
+            document.getElementById('current-stats').innerText = `${el.name} | Weight: ${el.w}`;
         }
 
-        function select(e) {
-            if (!picked[0]) { picked[0] = e; document.getElementById('s1').innerText = e.s; }
-            else if (!picked[1]) { picked[1] = e; document.getElementById('s2').innerText = e.s; react(); }
-        }
+        function guess(type) {
+            if (currentIndex === null) return;
+            const target = elements[mysteryIndex].n;
+            const current = elements[currentIndex].n;
 
-        function react() {
-            const a = picked[0], b = picked[1];
-            const fOut = document.getElementById('f-out'), dOut = document.getElementById('d-out'), tOut = document.getElementById('type-out');
-            if (a.t === 'n' || b.t === 'n') { fOut.innerText = "Inert"; tOut.innerText = "NO REACTION"; dOut.style.display="none"; return; }
-            let vA = Math.abs(b.v), vB = Math.abs(a.v);
-            const gcd = (x, y) => y ? gcd(y, x % y) : x;
-            let c = gcd(vA, vB); vA/=c; vB/=c;
-            const formula = `${a.s}${vA==1?'':vA}${b.s}${vB==1?'':vB}`;
-            const reverse = `${b.s}${vB==1?'':vB}${a.s}${vA==1?'':vA}`;
-            fOut.innerHTML = formula.replace(/(\d+)/g, '<sub>$1</sub>');
-            const info = glossary[formula] || glossary[reverse];
-            if (info) {
-                tOut.innerText = info.type;
-                dOut.style.display = "block";
-                dOut.innerHTML = `<b>Name:</b> ${info.name}<br><b>Props:</b> ${info.prop}<br><b>App:</b> ${info.app}`;
-                saveToJournal(info.name, formula);
+            if (type === 'match' && current === target) {
+                alert("SUCCESS! You found " + elements[mysteryIndex].name);
+                resetGame();
+            } else if (type === 'higher' && current > target) {
+                upperBound = current;
+                renderList();
+            } else if (type === 'lower' && current < target) {
+                lowerBound = current;
+                renderList();
             } else {
-                tOut.innerText = "STABLE RATIO";
-                dOut.style.display = "block";
-                dOut.innerHTML = "<i>Mathematically stable; industrial data pending.</i>";
+                alert("Incorrect deduction! Try again.");
             }
         }
 
-        function saveToJournal(name, formula) {
-            let h = JSON.parse(localStorage.getItem('nelly_history')) || [];
-            if (!h.find(i => i.f === formula)) {
-                h.unshift({n: name, f: formula});
-                localStorage.setItem('nelly_history', JSON.stringify(h.slice(0, 20)));
-                loadHistory();
-            }
+        function renderList() {
+            const list = document.getElementById('element-list');
+            list.innerHTML = elements.map((el, i) => {
+                const isOut = el.n <= lowerBound || el.n >= upperBound;
+                return `<div class="el-row ${isOut?'out-of-bounds':''}" onclick="selectEl(${i})">
+                    <span>${el.n}. <b>${el.s}</b></span> <span>${el.name}</span>
+                </div>`;
+            }).join('');
         }
 
-        function loadHistory() {
-            const h = document.getElementById('history');
-            const d = JSON.parse(localStorage.getItem('nelly_history')) || [];
-            h.innerHTML = d.map(i => `<div class="journal-item"><span>${i.n}</span> <b>${i.f}</b></div>`).join('');
-        }
-
-        function resetSlot(n) { picked[n-1] = null; document.getElementById('s'+n).innerText = "?"; document.getElementById('d-out').style.display="none"; document.getElementById('f-out').innerText="SELECT 2"; }
-        function clearAll() { resetSlot(1); resetSlot(2); }
-        window.onload = start;
-
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
+        window.onload = resetGame;
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
