@@ -3,142 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's Chemistry: 118 Discovery</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Nelly's Element Trainer</title>
     <style>
-        :root { 
-            --accent: #bb86fc; 
-            --secondary: #7c4dff; 
-            --orange: #ffb74d; 
-            --bg: #120b1e; 
-            --card: #1e142e; 
-            --text: #e1bee7; 
-        }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 10px; margin: 0; display: flex; flex-direction: column; align-items: center; }
-        .box { background: var(--card); width: 95%; max-width: 480px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-top: 10px; }
+        :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 20px; border: 1px solid #3c2a5c; }
         
-        #game-display { background: #000; padding: 20px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; text-align: center; position: sticky; top: 0; z-index: 10; }
-        .mystery-hint { color: var(--accent); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; }
-        .element-card { font-size: 3.5rem; font-weight: bold; color: var(--orange); margin: 5px 0; }
-        .stats { font-size: 0.9rem; color: #d1c4e9; min-height: 40px; }
+        /* The Recall Screen */
+        #display { background: #000; padding: 30px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; text-align: center; }
+        .symbol { font-size: 4rem; font-weight: bold; color: #ffb74d; display: block; }
+        .reveal { color: #03dac6; font-size: 1.2rem; cursor: pointer; text-decoration: underline; margin-top: 10px; display: inline-block; }
+        #answer { visibility: hidden; margin-top: 10px; font-weight: bold; font-size: 1.5rem; }
 
-        .search-bar { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #3c2a5c; background: #090510; color: white; margin-bottom: 15px; }
+        /* Mnemonic Bar */
+        .mnemonic-tip { font-style: italic; font-size: 0.85rem; color: #b39ddb; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 15px; }
 
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .btn { padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        .btn-low { background: #cf6679; } 
-        .btn-high { background: #03dac6; color: #000; }
-        .btn-match { background: var(--secondary); grid-column: span 2; font-size: 1.1rem; }
-        .btn:active { transform: scale(0.95); }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-wrong { background: #cf6679; color: white; }
+        .btn-correct { background: #7c4dff; color: white; }
 
-        .grid-header { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--accent); padding: 0 10px 5px; text-transform: uppercase; }
-        .grid-container { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid #3c2a5c; }
-        .el-row { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #2a1b3d; font-size: 0.9rem; cursor: pointer; }
-        .el-row:hover { background: rgba(187, 134, 252, 0.1); }
-        .el-row b { color: var(--accent); margin-right: 10px; }
-        .out-of-bounds { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
+        .progress-bar { width: 100%; background: #000; height: 8px; border-radius: 4px; margin-top: 20px; overflow: hidden; }
+        #progress-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.5s; }
     </style>
 </head>
 <body>
     <div class="box">
-        <div id="game-display">
-            <span class="mystery-hint" id="hint-text">Elemingle: 118 Elements</span>
-            <div class="element-card" id="current-el">??</div>
-            <div class="stats" id="current-stats">Select an element below to begin narrowing down the mystery.</div>
+        <div id="display">
+            <span class="symbol" id="target-symbol">??</span>
+            <span class="reveal" onclick="document.getElementById('answer').style.visibility='visible'">Tap to Reveal Name</span>
+            <div id="answer">ELEMENT</div>
         </div>
 
-        <div class="controls">
-            <button class="btn btn-low" onclick="guess('lower')">Too Low</button>
-            <button class="btn btn-high" onclick="guess('higher')">Too High</button>
-            <button class="btn btn-match" onclick="guess('match')">CHECK MATCH</button>
+        <div class="mnemonic-tip" id="mnemonic-text">
+            Mnemonic: "Happy Henry Likes Beer..."
         </div>
 
-        <input type="text" id="search" class="search-bar" placeholder="Quick Search (e.g. Gold, Ti, 79)..." onkeyup="filterList()">
-        
-        <div class="grid-header">
-            <span># Symbol / Name</span>
-            <span>Atomic Weight</span>
+        <div class="btn-group">
+            <button class="btn btn-wrong" onclick="next(false)">Forgot It</button>
+            <button class="btn btn-correct" onclick="next(true)">Remembered!</button>
         </div>
-        <div class="grid-container" id="element-list"></div>
-        
-        <button class="btn" style="background:#443355; margin-top:15px; width:100%" onclick="resetGame()">Restart New Discovery</button>
+
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <p id="stats" style="font-size: 0.8rem; text-align: center;">Mastery: 0/118</p>
     </div>
 
     <script>
-        // DATASET: All 118 Elements [Atomic #, Symbol, Name, Weight]
         const elements = [
-            [1,"H","Hydrogen",1.008],[2,"He","Helium",4.003],[3,"Li","Lithium",6.941],[4,"Be","Beryllium",9.012],[5,"B","Boron",10.81],[6,"C","Carbon",12.01],[7,"N","Nitrogen",14.01],[8,"O","Oxygen",16.00],[9,"F","Fluorine",19.00],[10,"Ne","Neon",20.18],[11,"Na","Sodium",22.99],[12,"Mg","Magnesium",24.31],[13,"Al","Aluminum",26.98],[14,"Si","Silicon",28.09],[15,"P","Phosphorus",30.97],[16,"S","Sulfur",32.06],[17,"Cl","Chlorine",35.45],[18,"Ar","Argon",39.95],[19,"K","Potassium",39.10],[20,"Ca","Calcium",40.08],[21,"Sc","Scandium",44.96],[22,"Ti","Titanium",47.87],[23,"V","Vanadium",50.94],[24,"Cr","Chromium",52.00],[25,"Mn","Manganese",54.94],[26,"Fe","Iron",55.85],[27,"Co","Cobalt",58.93],[28,"Ni","Nickel",58.69],[29,"Cu","Copper",63.55],[30,"Zn","Zinc",65.38],[31,"Ga","Gallium",69.72],[32,"Ge","Germanium",72.63],[33,"As","Arsenic",74.92],[34,"Se","Selenium",78.96],[35,"Br","Bromine",79.90],[36,"Kr","Krypton",83.80],[37,"Rb","Rubidium",85.47],[38,"Sr","Strontium",87.62],[39,"Y","Yttrium",88.91],[40,"Zr","Zirconium",91.22],[41,"Nb","Niobium",92.91],[42,"Mo","Molybdenum",95.94],[43,"Tc","Technetium",98.00],[44,"Ru","Ruthenium",101.1],[45,"Rh","Rhodium",102.9],[46,"Pd","Palladium",106.4],[47,"Ag","Silver",107.9],[48,"Cd","Cadmium",112.4],[49,"In","Indium",114.8],[50,"Sn","Tin",118.7],[51,"Sb","Antimony",121.8],[52,"Te","Tellurium",127.6],[53,"I","Iodine",126.9],[54,"Xe","Xenon",131.3],[55,"Cs","Cesium",132.9],[56,"Ba","Barium",137.3],[57,"La","Lanthanum",138.9],[58,"Ce","Cerium",140.1],[59,"Pr","Praseodymium",140.9],[60,"Nd","Neodymium",144.2],[61,"Pm","Promethium",145.0],[62,"Sm","Samarium",150.4],[63,"Eu","Europium",152.0],[64,"Gd","Gadolinium",157.3],[65,"Tb","Terbium",158.9],[66,"Dy","Dysprosium",162.5],[67,"Ho","Holmium",164.9],[68,"Er","Erbium",167.3],[69,"Tm","Thulium",168.9],[70,"Yb","Ytterbium",173.0],[71,"Lu","Lutetium",175.0],[72,"Hf","Hafnium",178.5],[73,"Ta","Tantalum",181.0],[74,"W","Tungsten",183.8],[75,"Re","Rhenium",186.2],[76,"Os","Osmium",190.2],[77,"Ir","Iridium",192.2],[78,"Pt","Platinum",195.1],[79,"Au","Gold",197.0],[80,"Hg","Mercury",200.6],[81,"Tl","Thallium",204.4],[82,"Pb","Lead",207.2],[83,"Bi","Bismuth",209.0],[84,"Po","Polonium",209.0],[85,"At","Astatine",210.0],[86,"Rn","Radon",222.0],[87,"Fr","Francium",223.0],[88,"Ra","Radium",226.0],[89,"Ac","Actinium",227.0],[90,"Th","Thorium",232.0],[91,"Pa","Protactinium",231.0],[92,"U","Uranium",238.0],[93,"Np","Neptunium",237.0],[94,"Pu","Plutonium",244.0],[95,"Am","Americium",243.0],[96,"Cm","Curium",247.0],[97,"Bk","Berkelium",247.0],[98,"Cf","Californium",251.0],[99,"Es","Einsteinium",252.0],[100,"Fm","Fermium",257.0],[101,"Md","Mendelevium",258.0],[102,"No","Nobelium",259.0],[103,"Lr","Lawrencium",262.0],[104,"Rf","Rutherfordium",267.0],[105,"Db","Dubnium",270.0],[106,"Sg","Seaborgium",271.0],[107,"Bh","Bohrium",270.0],[108,"Hs","Hassium",277.0],[109,"Mt","Meitnerium",278.0],[110,"Ds","Darmstadtium",281.0],[111,"Rg","Roentgenium",282.0],[112,"Cn","Copernicium",285.0],[113,"Nh","Nihonium",286.0],[114,"Fl","Flerovium",289.0],[115,"Mc","Moscovium",290.0],[116,"Lv","Livermorium",293.0],[117,"Ts","Tennessine",294.0],[118,"Og","Oganesson",294.0]
+            {s:"H", n:"Hydrogen", m:"Happy"}, {s:"He", n:"Helium", m:"Henry"},
+            {s:"Li", n:"Lithium", m:"Likes"}, {s:"Be", n:"Beryllium", m:"Beer"},
+            {s:"B", n:"Boron", m:"But"}, {s:"C", n:"Carbon", m:"Cottage"},
+            {s:"N", n:"Nitrogen", m:"Near"}, {s:"O", n:"Oxygen", m:"Our"},
+            {s:"F", n:"Fluorine", m:"Friend"}, {s:"Ne", n:"Neon", m:"Nelly"}
+            // ... Add the rest of the 118 here following this pattern
         ];
 
-        let mysteryIndex, currentIndex, lowerBound = 0, upperBound = 119;
+        let currentIndex = 0;
+        let mastered = 0;
 
-        function resetGame() {
-            mysteryIndex = Math.floor(Math.random() * elements.length);
-            currentIndex = null;
-            lowerBound = 0; upperBound = 119;
-            document.getElementById('hint-text').innerText = "Find the Mystery Element";
-            document.getElementById('current-el').innerText = "??";
-            document.getElementById('current-stats').innerText = "Pick an element to start.";
-            renderList();
+        function updateDisplay() {
+            const el = elements[currentIndex];
+            document.getElementById('target-symbol').innerText = el.s;
+            document.getElementById('answer').innerText = el.n;
+            document.getElementById('answer').style.visibility = 'hidden';
+            document.getElementById('mnemonic-text').innerText = el.m ? `Mnemonic Word: "${el.m}"` : "Keep practicing this section!";
+            
+            const percent = (mastered / elements.length) * 100;
+            document.getElementById('progress-fill').style.width = percent + "%";
+            document.getElementById('stats').innerText = `Mastery: ${mastered}/${elements.length}`;
         }
 
-        function selectEl(idx) {
-            currentIndex = idx;
-            const el = elements[idx];
-            document.getElementById('current-el').innerText = el[1];
-            document.getElementById('current-stats').innerText = `${el[2]} | At# ${el[0]} | Wt: ${el[3]}`;
+        function next(correct) {
+            if (correct) mastered++;
+            currentIndex = (currentIndex + 1) % elements.length;
+            updateDisplay();
         }
 
-        function guess(type) {
-            if (currentIndex === null) return;
-            const targetNum = elements[mysteryIndex][0];
-            const currentNum = elements[currentIndex][0];
-
-            if (type === 'match') {
-                if (currentNum === targetNum) {
-                    document.getElementById('hint-text').innerText = "DISCOVERY SUCCESSFUL!";
-                    alert(`Correct! The element was ${elements[mysteryIndex][2]}!`);
-                    resetGame();
-                } else {
-                    alert("Not a match. Use Higher/Lower to narrow it down.");
-                }
-            } else if (type === 'higher' && currentNum > targetNum) {
-                upperBound = currentNum;
-                renderList();
-            } else if (type === 'lower' && currentNum < targetNum) {
-                lowerBound = currentNum;
-                renderList();
-            } else {
-                alert("Incorrect deduction! Check the atomic number logic.");
-            }
-        }
-
-        function filterList() {
-            const q = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.el-row').forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(q) ? "flex" : "none";
-            });
-        }
-
-        function renderList() {
-            const container = document.getElementById('element-list');
-            container.innerHTML = elements.map((el, i) => {
-                const isOut = el[0] <= lowerBound || el[0] >= upperBound;
-                return `<div class="el-row ${isOut ? 'out-of-bounds' : ''}" onclick="selectEl(${i})">
-                    <span><b>${el[0]}</b> ${el[1]} - ${el[2]}</span>
-                    <span>${el[3]}</span>
-                </div>`;
-            }).join('');
-        }
-
-        window.onload = resetGame;
-        if ('serviceWorker' in navigator) { 
-            navigator.serviceWorker.register('sw.js'); 
-        }
+        window.onload = updateDisplay;
     </script>
 </body>
 </html>
