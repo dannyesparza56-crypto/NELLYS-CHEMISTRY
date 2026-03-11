@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's 118 Mastery</title>
+    <title>Nelly's 118: Smartass Edition</title>
     <style>
         :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; --gold: #ffb74d; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
@@ -23,6 +23,17 @@
         .opt.wrong { background: var(--wrong) !important; }
 
         .stats { margin-top: 20px; font-size: 0.8rem; color: var(--accent); font-weight: bold; }
+        
+        /* Smartass Console Styling */
+        #smartass-console { 
+            margin-top: 15px; 
+            min-height: 30px; 
+            color: #ff4081; 
+            font-weight: bold; 
+            font-style: italic; 
+            font-size: 1rem;
+            text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -49,31 +60,28 @@
         </div>
 
         <div class="options-grid" id="options"></div>
+        
+        <div id="smartass-console"></div>
         <div class="stats" id="score-text">STREAK: 0 | BEST: 0</div>
     </div>
 
     <script>
         const elements = [
-            // Period 1-2
             {s:"H", n:"Hydrogen", g:"Reactive nonmetal", r:"Oxygen"}, {s:"He", n:"Helium", g:"Noble gas", r:"Medium"},
             {s:"Li", n:"Lithium", g:"Alkali metal", r:"Mithium"}, {s:"Be", n:"Beryllium", g:"Alkaline earth metal", r:"Silly-um"},
             {s:"B", n:"Boron", g:"Metalloid", r:"Moron"}, {s:"C", n:"Carbon", g:"Reactive nonmetal", r:"Garden"},
             {s:"N", n:"Nitrogen", g:"Reactive nonmetal", r:"Hydrogen"}, {s:"O", n:"Oxygen", g:"Reactive nonmetal", r:"Nitrogen"},
             {s:"F", n:"Fluorine", g:"Reactive nonmetal", r:"Marine"}, {s:"Ne", n:"Neon", g:"Noble gas", r:"Freon"},
-            // Period 3
             {s:"Na", n:"Sodium", g:"Alkali metal", r:"Podium"}, {s:"Mg", n:"Magnesium", g:"Alkaline earth metal", r:"Gymnasium"},
             {s:"Al", n:"Aluminum", g:"Post-transition metal", r:"Minim-um"}, {s:"Si", n:"Silicon", g:"Metalloid", r:"Beacon"},
             {s:"P", n:"Phosphorus", g:"Reactive nonmetal", r:"Walrus"}, {s:"S", n:"Sulfur", g:"Reactive nonmetal", r:"Golfer"},
             {s:"Cl", n:"Chlorine", g:"Reactive nonmetal", r:"Marine"}, {s:"Ar", n:"Argon", g:"Noble gas", r:"Jargon"},
-            // Key Shop Metals
             {s:"Ti", n:"Titanium", g:"Transition metal", r:"Uranium"}, {s:"Fe", n:"Iron", g:"Transition metal", r:"Lion"},
             {s:"Cu", n:"Copper", g:"Transition metal", r:"Hopper"}, {s:"Ag", n:"Silver", g:"Transition metal", r:"Quiver"},
             {s:"Au", n:"Gold", g:"Transition metal", r:"Bold"}, {s:"W", n:"Tungsten", g:"Transition metal", r:"Fun-sten"},
             {s:"Pb", n:"Lead", g:"Post-transition metal", r:"Bed"}, {s:"Hg", n:"Mercury", g:"Transition metal", r:"Curry"},
-            // Lanthanides & Actinides
             {s:"La", n:"Lanthanum", g:"Lanthanide", r:"Platinum"}, {s:"U", n:"Uranium", g:"Actinide", r:"Titanium"},
             {s:"Pu", n:"Plutonium", g:"Actinide", r:"Harmonium"}, {s:"Og", n:"Oganesson", g:"Noble gas", r:"Lesson"}
-            // Note: The logic handles filtering the full 118 if you add them to this array!
         ];
 
         let streak = 0, best = 0;
@@ -81,14 +89,6 @@
         function loadQuestion() {
             const family = document.getElementById('family-filter').value;
             const filtered = family === "all" ? elements : elements.filter(e => e.g === family);
-            
-            if (filtered.length < 1) {
-                alert("Add more elements to this category!");
-                document.getElementById('family-filter').value = "all";
-                loadQuestion();
-                return;
-            }
-
             const el = filtered[Math.floor(Math.random() * filtered.length)];
             
             document.getElementById('target-symbol').innerText = el.s;
@@ -107,22 +107,36 @@
         }
 
         function check(choice, correct, btn) {
+            const consoleBox = document.getElementById('smartass-console');
             if (choice === correct) {
                 btn.classList.add('right');
                 streak++;
                 if (streak > best) best = streak;
+                
+                // Handle Smartass Logic
+                if (streak === 5) {
+                    consoleBox.innerText = "you finally got a streak see if you can get to 30";
+                } else if (streak === 10) {
+                    consoleBox.innerText = "Okay smartass";
+                    setTimeout(() => { if(streak < 20) consoleBox.innerText = ""; }, 10000);
+                } else if (streak === 20) {
+                    consoleBox.innerText = "alright we get it lets see if you can get 30";
+                } else if (streak >= 30) {
+                    consoleBox.innerText = "8====D you fucking this game";
+                }
+
                 document.getElementById('score-text').innerText = `STREAK: ${streak} | BEST: ${best}`;
                 setTimeout(loadQuestion, 500);
             } else {
                 btn.classList.add('wrong');
                 streak = 0;
+                consoleBox.innerText = ""; // Clear smartass comments on fail
                 document.getElementById('score-text').innerText = `STREAK: 0 | BEST: ${best}`;
-                // Keep the hint visible so they learn before it resets
                 setTimeout(loadQuestion, 1200);
             }
         }
 
-        function resetQuiz() { streak = 0; loadQuestion(); }
+        function resetQuiz() { streak = 0; document.getElementById('smartass-console').innerText = ""; loadQuestion(); }
         window.onload = loadQuestion;
     </script>
 </body>
