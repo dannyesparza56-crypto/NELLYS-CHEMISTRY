@@ -3,41 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's 118: Smartass Edition</title>
+    <title>Smartass Periodic Table Edition</title>
     <style>
-        :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; --gold: #ffb74d; }
+        :root { --accent: #bb86fc; --bg: #0d0216; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; --gold: #ffb74d; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
-        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-top: 10px; text-align: center; }
+        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 50px rgba(0,0,0,0.8); margin-top: 10px; text-align: center; }
         
-        .cat-select { width: 100%; padding: 12px; background: #090510; border: 2px solid var(--accent); color: var(--accent); border-radius: 12px; margin-bottom: 15px; font-weight: bold; cursor: pointer; }
+        h1 { font-size: 1.2rem; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .cat-select { width: 100%; padding: 12px; background: #000; border: 2px solid var(--accent); color: var(--accent); border-radius: 12px; margin-bottom: 15px; font-weight: bold; cursor: pointer; }
 
-        #display { background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; min-height: 140px; }
-        .symbol { font-size: 5rem; font-weight: bold; color: var(--gold); display: block; line-height: 1; }
+        #display { background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; min-height: 140px; position: relative; }
+        .symbol { font-size: 5.5rem; font-weight: bold; color: var(--gold); display: block; line-height: 1; text-shadow: 0 0 15px rgba(255, 183, 77, 0.4); }
         .hint-box { margin-top: 10px; }
         .rhyme-text { color: var(--gold); font-size: 1.1rem; font-weight: bold; font-style: italic; display: block; margin-bottom: 5px; }
-        .family-text { color: #b39ddb; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #3c2a5c; padding: 2px 8px; border-radius: 10px; }
+        .family-text { color: #b39ddb; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; background: #2a1b3d; padding: 4px 10px; border-radius: 20px; }
 
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.1s; font-size: 1rem; }
+        .opt:active { transform: scale(0.95); }
         .opt.right { background: var(--correct) !important; color: #000; }
         .opt.wrong { background: var(--wrong) !important; }
 
-        .stats { margin-top: 20px; font-size: 0.8rem; color: var(--accent); font-weight: bold; }
-        
-        /* Smartass Console Styling */
         #smartass-console { 
-            margin-top: 15px; 
-            min-height: 30px; 
+            margin: 15px 0; 
+            min-height: 40px; 
             color: #ff4081; 
-            font-weight: bold; 
-            font-style: italic; 
-            font-size: 1rem;
-            text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+            font-weight: 800; 
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        .stats { font-size: 0.9rem; color: var(--accent); font-weight: bold; border-top: 1px solid #3c2a5c; padding-top: 10px; }
     </style>
 </head>
 <body>
     <div class="box">
+        <h1>Smartass Edition</h1>
+        
         <select id="family-filter" class="cat-select" onchange="resetQuiz()">
             <option value="all">ALL 118 ELEMENTS</option>
             <option value="Alkali metal">ALKALI METALS</option>
@@ -62,6 +65,7 @@
         <div class="options-grid" id="options"></div>
         
         <div id="smartass-console"></div>
+        
         <div class="stats" id="score-text">STREAK: 0 | BEST: 0</div>
     </div>
 
@@ -76,12 +80,15 @@
             {s:"Al", n:"Aluminum", g:"Post-transition metal", r:"Minim-um"}, {s:"Si", n:"Silicon", g:"Metalloid", r:"Beacon"},
             {s:"P", n:"Phosphorus", g:"Reactive nonmetal", r:"Walrus"}, {s:"S", n:"Sulfur", g:"Reactive nonmetal", r:"Golfer"},
             {s:"Cl", n:"Chlorine", g:"Reactive nonmetal", r:"Marine"}, {s:"Ar", n:"Argon", g:"Noble gas", r:"Jargon"},
+            {s:"K", n:"Potassium", g:"Alkali metal", r:"Gymnasium"}, {s:"Ca", n:"Calcium", g:"Alkaline earth metal", r:"Valium"},
             {s:"Ti", n:"Titanium", g:"Transition metal", r:"Uranium"}, {s:"Fe", n:"Iron", g:"Transition metal", r:"Lion"},
-            {s:"Cu", n:"Copper", g:"Transition metal", r:"Hopper"}, {s:"Ag", n:"Silver", g:"Transition metal", r:"Quiver"},
+            {s:"Ni", n:"Nickel", g:"Transition metal", r:"Pickle"}, {s:"Cu", n:"Copper", g:"Transition metal", r:"Hopper"},
+            {s:"Zn", n:"Zinc", g:"Transition metal", r:"Think"}, {s:"Ag", n:"Silver", g:"Transition metal", r:"Quiver"},
             {s:"Au", n:"Gold", g:"Transition metal", r:"Bold"}, {s:"W", n:"Tungsten", g:"Transition metal", r:"Fun-sten"},
-            {s:"Pb", n:"Lead", g:"Post-transition metal", r:"Bed"}, {s:"Hg", n:"Mercury", g:"Transition metal", r:"Curry"},
-            {s:"La", n:"Lanthanum", g:"Lanthanide", r:"Platinum"}, {s:"U", n:"Uranium", g:"Actinide", r:"Titanium"},
-            {s:"Pu", n:"Plutonium", g:"Actinide", r:"Harmonium"}, {s:"Og", n:"Oganesson", g:"Noble gas", r:"Lesson"}
+            {s:"Pt", n:"Platinum", g:"Transition metal", r:"Flatten-um"}, {s:"Hg", n:"Mercury", g:"Transition metal", r:"Curry"},
+            {s:"Pb", n:"Lead", g:"Post-transition metal", r:"Bed"}, {s:"Rn", n:"Radon", g:"Noble gas", r:"Crayon"},
+            {s:"U", n:"Uranium", g:"Actinide", r:"Titanium"}, {s:"Pu", n:"Plutonium", g:"Actinide", r:"Harmonium"},
+            {s:"Og", n:"Oganesson", g:"Noble gas", r:"Lesson"}
         ];
 
         let streak = 0, best = 0;
@@ -113,12 +120,11 @@
                 streak++;
                 if (streak > best) best = streak;
                 
-                // Handle Smartass Logic
                 if (streak === 5) {
                     consoleBox.innerText = "you finally got a streak see if you can get to 30";
                 } else if (streak === 10) {
                     consoleBox.innerText = "Okay smartass";
-                    setTimeout(() => { if(streak < 20) consoleBox.innerText = ""; }, 10000);
+                    setTimeout(() => { if(streak >= 10 && streak < 20) consoleBox.innerText = ""; }, 10000);
                 } else if (streak === 20) {
                     consoleBox.innerText = "alright we get it lets see if you can get 30";
                 } else if (streak >= 30) {
@@ -130,9 +136,9 @@
             } else {
                 btn.classList.add('wrong');
                 streak = 0;
-                consoleBox.innerText = ""; // Clear smartass comments on fail
+                consoleBox.innerText = "Back to zero, loser."; 
                 document.getElementById('score-text').innerText = `STREAK: 0 | BEST: ${best}`;
-                setTimeout(loadQuestion, 1200);
+                setTimeout(() => { consoleBox.innerText = ""; loadQuestion(); }, 1200);
             }
         }
 
