@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's Chemistry: Family Mastery</title>
+    <title>Nelly's Rhyme & Reason Chemistry</title>
     <style>
-        :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; }
+        :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; --gold: #ffb74d; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
         .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-top: 10px; text-align: center; }
         
-        /* Family Selector */
-        .cat-select { width: 100%; padding: 12px; background: #090510; border: 2px solid var(--accent); color: var(--accent); border-radius: 12px; margin-bottom: 15px; font-weight: bold; cursor: pointer; }
+        .cat-select { width: 100%; padding: 12px; background: #090510; border: 2px solid var(--accent); color: var(--accent); border-radius: 12px; margin-bottom: 15px; font-weight: bold; }
 
-        #display { background: #000; padding: 30px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; }
-        .symbol { font-size: 5rem; font-weight: bold; color: #ffb74d; display: block; }
-        .hint { font-size: 0.85rem; color: #b39ddb; margin-top: 10px; min-height: 20px; font-style: italic; }
+        #display { background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; min-height: 140px; }
+        .symbol { font-size: 5rem; font-weight: bold; color: var(--gold); display: block; line-height: 1; }
+        .hint-box { margin-top: 10px; min-height: 40px; }
+        .rhyme-text { color: var(--gold); font-size: 1.1rem; font-weight: bold; font-style: italic; }
+        .family-text { color: #b39ddb; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
 
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .opt.right { background: var(--correct) !important; color: #000; }
-        .opt.wrong { background: var(--wrong) !important; color: white; }
+        .opt.wrong { background: var(--wrong) !important; }
 
-        .stats-container { margin-top: 25px; padding-top: 15px; border-top: 1px solid #3c2a5c; }
-        #score-text { font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
+        .stats { margin-top: 20px; font-size: 0.8rem; color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -42,29 +42,40 @@
 
         <div id="display">
             <span class="symbol" id="target-symbol">?</span>
-            <div class="hint" id="mnemonic-hint">Select a category to start</div>
+            <div class="hint-box">
+                <div id="rhyme-hint" class="rhyme-text"></div>
+                <div id="family-hint" class="family-text"></div>
+            </div>
         </div>
 
         <div class="options-grid" id="options"></div>
-
-        <div class="stats-container">
-            <div id="score-text">STREAK: 0 | BEST: 0</div>
-        </div>
+        <div class="stats" id="score-text">STREAK: 0 | BEST: 0</div>
     </div>
 
     <script>
-        // Full Dataset structured by your specific categories
         const elements = [
-            {s:"H", n:"Hydrogen", g:"Reactive nonmetal"}, {s:"He", n:"Helium", g:"Noble gas"},
-            {s:"Li", n:"Lithium", g:"Alkali metal"}, {s:"Be", n:"Beryllium", g:"Alkaline earth metal"},
-            {s:"B", n:"Boron", g:"Metalloid"}, {s:"C", n:"Carbon", g:"Reactive nonmetal"},
-            {s:"Al", n:"Aluminum", g:"Post-transition metal"}, {s:"Si", n:"Silicon", g:"Metalloid"},
-            {s:"Ti", n:"Titanium", g:"Transition metal"}, {s:"Fe", n:"Iron", g:"Transition metal"},
-            {s:"Cu", n:"Copper", g:"Transition metal"}, {s:"Ag", n:"Silver", g:"Transition metal"},
-            {s:"Au", n:"Gold", g:"Transition metal"}, {s:"Pb", n:"Lead", g:"Post-transition metal"},
-            {s:"Xe", n:"Xenon", g:"Noble gas"}, {s:"Ce", n:"Cerium", g:"Lanthanide"},
-            {s:"U", n:"Uranium", g:"Actinide"}, {s:"Og", n:"Oganesson", g:"Noble gas"}
-            // Note: Add remaining 118 elements following this group naming convention
+            {s:"H", n:"Hydrogen", g:"Reactive nonmetal", r:"Oxygen"},
+            {s:"He", n:"Helium", g:"Noble gas", r:"Medium"},
+            {s:"Li", n:"Lithium", g:"Alkali metal", r:"Mithium"},
+            {s:"Be", n:"Beryllium", g:"Alkaline earth metal", r:"Silly-um"},
+            {s:"B", n:"Boron", r:"Moron", g:"Metalloid"},
+            {s:"C", n:"Carbon", r:"Garden", g:"Reactive nonmetal"},
+            {s:"N", n:"Nitrogen", r:"Hydrogen", g:"Reactive nonmetal"},
+            {s:"O", n:"Oxygen", r:"Nitrogen", g:"Reactive nonmetal"},
+            {s:"F", n:"Fluorine", r:"Marine", g:"Reactive nonmetal"},
+            {s:"Ne", n:"Neon", r:"Paeon", g:"Noble gas"},
+            {s:"Na", n:"Sodium", r:"Podium", g:"Alkali metal"},
+            {s:"Mg", n:"Magnesium", r:"Gymnasium", g:"Alkaline earth metal"},
+            {s:"Al", n:"Aluminum", r:"Illumin-um", g:"Post-transition metal"},
+            {s:"Si", n:"Silicon", r:"Beacon", g:"Metalloid"},
+            {s:"Ti", n:"Titanium", r:"Uranium", g:"Transition metal"},
+            {s:"Fe", n:"Iron", r:"Lion", g:"Transition metal"},
+            {s:"Cu", n:"Copper", r:"Hopper", g:"Transition metal"},
+            {s:"Ag", n:"Silver", r:"Quiver", g:"Transition metal"},
+            {s:"Au", n:"Gold", r:"Bold", g:"Transition metal"},
+            {s:"U", n:"Uranium", r:"Titanium", g:"Actinide"},
+            {s:"Pu", n:"Plutonium", r:"Harmonium", g:"Actinide"},
+            {s:"Og", n:"Oganesson", r:"Lesson", g:"Noble gas"}
         ];
 
         let streak = 0, best = 0;
@@ -72,42 +83,36 @@
         function loadQuestion() {
             const family = document.getElementById('family-filter').value;
             const filtered = family === "all" ? elements : elements.filter(e => e.g === family);
-            
-            if (filtered.length < 1) {
-                document.getElementById('mnemonic-hint').innerText = "Category data loading...";
-                return;
-            }
-
             const el = filtered[Math.floor(Math.random() * filtered.length)];
+            
             document.getElementById('target-symbol').innerText = el.s;
-            document.getElementById('mnemonic-hint').innerText = `Identify this ${el.g}`;
+            document.getElementById('rhyme-hint').innerText = ""; // Hide rhyme initially
+            document.getElementById('family-hint').innerText = el.g;
 
-            // Generate 4 options from the filtered list (or all elements if filtered list is too small)
-            let optionPool = filtered.length >= 4 ? filtered : elements;
             let opts = [el.n];
             while(opts.length < 4) {
-                let decoy = optionPool[Math.floor(Math.random() * optionPool.length)].n;
+                let decoy = elements[Math.floor(Math.random() * elements.length)].n;
                 if(!opts.includes(decoy)) opts.push(decoy);
             }
             opts.sort(() => Math.random() - 0.5);
 
             const grid = document.getElementById('options');
-            grid.innerHTML = opts.map(o => `<button class="opt" onclick="check('${o}', '${el.n}', this)">${o}</button>`).join('');
+            grid.innerHTML = opts.map(o => `<button class="opt" onclick="check('${o}', '${el.n}', '${el.r}', this)">${o}</button>`).join('');
         }
 
-        function check(choice, correct, btn) {
+        function check(choice, correct, rhyme, btn) {
             if (choice === correct) {
                 btn.classList.add('right');
                 streak++;
                 if (streak > best) best = streak;
                 document.getElementById('score-text').innerText = `STREAK: ${streak} | BEST: ${best}`;
-                setTimeout(loadQuestion, 500);
+                setTimeout(loadQuestion, 600);
             } else {
                 btn.classList.add('wrong');
                 streak = 0;
                 document.getElementById('score-text').innerText = `STREAK: 0 | BEST: ${best}`;
-                document.getElementById('mnemonic-hint').innerText = `Nope! That's ${correct}.`;
-                setTimeout(loadQuestion, 1500);
+                document.getElementById('rhyme-hint').innerText = `Rhymes with: ${rhyme}`;
+                setTimeout(loadQuestion, 1800);
             }
         }
 
