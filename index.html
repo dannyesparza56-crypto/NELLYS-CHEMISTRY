@@ -3,83 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's Element Trainer</title>
+    <title>Nelly's Elemental Mastery</title>
     <style>
-        :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; }
-        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 20px; border: 1px solid #3c2a5c; }
+        :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
+        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-top: 20px; text-align: center; }
         
-        /* The Recall Screen */
-        #display { background: #000; padding: 30px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; text-align: center; }
-        .symbol { font-size: 4rem; font-weight: bold; color: #ffb74d; display: block; }
-        .reveal { color: #03dac6; font-size: 1.2rem; cursor: pointer; text-decoration: underline; margin-top: 10px; display: inline-block; }
-        #answer { visibility: hidden; margin-top: 10px; font-weight: bold; font-size: 1.5rem; }
+        #display { background: #000; padding: 30px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; }
+        .symbol { font-size: 4.5rem; font-weight: bold; color: #ffb74d; display: block; }
+        .hint { font-size: 0.85rem; color: #b39ddb; margin-top: 10px; min-height: 20px; font-style: italic; }
 
-        /* Mnemonic Bar */
-        .mnemonic-tip { font-style: italic; font-size: 0.85rem; color: #b39ddb; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .opt:hover { border-color: var(--accent); }
+        .opt.right { background: var(--correct); color: #000; border-color: var(--correct); }
+        .opt.wrong { background: var(--wrong); color: white; border-color: var(--wrong); }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-wrong { background: #cf6679; color: white; }
-        .btn-correct { background: #7c4dff; color: white; }
-
-        .progress-bar { width: 100%; background: #000; height: 8px; border-radius: 4px; margin-top: 20px; overflow: hidden; }
-        #progress-fill { height: 100%; width: 0%; background: var(--accent); transition: 0.5s; }
+        .progress-container { width: 100%; height: 6px; background: #000; border-radius: 3px; margin-top: 25px; overflow: hidden; }
+        #progress-bar { height: 100%; width: 0%; background: var(--accent); transition: 0.4s; }
+        #score-text { font-size: 0.75rem; margin-top: 8px; color: var(--accent); letter-spacing: 1px; }
     </style>
 </head>
 <body>
     <div class="box">
         <div id="display">
-            <span class="symbol" id="target-symbol">??</span>
-            <span class="reveal" onclick="document.getElementById('answer').style.visibility='visible'">Tap to Reveal Name</span>
-            <div id="answer">ELEMENT</div>
+            <span class="symbol" id="target-symbol">H</span>
+            <div class="hint" id="mnemonic-hint"></div>
         </div>
 
-        <div class="mnemonic-tip" id="mnemonic-text">
-            Mnemonic: "Happy Henry Likes Beer..."
-        </div>
+        <div class="options-grid" id="options">
+            </div>
 
-        <div class="btn-group">
-            <button class="btn btn-wrong" onclick="next(false)">Forgot It</button>
-            <button class="btn btn-correct" onclick="next(true)">Remembered!</button>
-        </div>
-
-        <div class="progress-bar"><div id="progress-fill"></div></div>
-        <p id="stats" style="font-size: 0.8rem; text-align: center;">Mastery: 0/118</p>
+        <div class="progress-container"><div id="progress-bar"></div></div>
+        <div id="score-text">STREAK: 0 | MASTERY: 0/118</div>
+        <button onclick="reset()" style="background:none; border:none; color:#665; font-size:0.7rem; margin-top:20px; cursor:pointer;">RESTART PROGRESS</button>
     </div>
 
     <script>
         const elements = [
-            {s:"H", n:"Hydrogen", m:"Happy"}, {s:"He", n:"Helium", m:"Henry"},
-            {s:"Li", n:"Lithium", m:"Likes"}, {s:"Be", n:"Beryllium", m:"Beer"},
-            {s:"B", n:"Boron", m:"But"}, {s:"C", n:"Carbon", m:"Cottage"},
-            {s:"N", n:"Nitrogen", m:"Near"}, {s:"O", n:"Oxygen", m:"Our"},
-            {s:"F", n:"Fluorine", m:"Friend"}, {s:"Ne", n:"Neon", m:"Nelly"}
-            // ... Add the rest of the 118 here following this pattern
+            {s:"H", n:"Hydrogen", m:"Hi"}, {s:"He", n:"Helium", m:"He"}, {s:"Li", n:"Lithium", m:"Like"},
+            {s:"Be", n:"Beryllium", m:"Betty"}, {s:"B", n:"Boron", m:"Brought"}, {s:"C", n:"Carbon", m:"Candy"},
+            {s:"N", n:"Nitrogen", m:"Near"}, {s:"O", n:"Oxygen", m:"Old"}, {s:"F", n:"Fluorine", m:"Funny"},
+            {s:"Ne", n:"Neon", m:"Neon"}, {s:"Na", n:"Sodium", m:"Silly"}, {s:"Mg", n:"Magnesium", m:"Monkey"},
+            {s:"Al", n:"Aluminum", m:"Always"}, {s:"Si", n:"Silicon", m:"Sings"}, {s:"P", n:"Phosphorus", m:"Perfect"},
+            {s:"S", n:"Sulfur", m:"Songs"}, {s:"Cl", n:"Chlorine", m:"Clearly"}, {s:"Ar", n:"Argon", m:"Around"},
+            {s:"K", n:"Potassium", m:"Kind"}, {s:"Ca", n:"Calcium", m:"Cats"}
+            // For full 118, add the remaining elements here.
         ];
 
-        let currentIndex = 0;
-        let mastered = 0;
+        let currentIdx = 0, streak = 0, mastered = 0;
 
-        function updateDisplay() {
-            const el = elements[currentIndex];
+        function loadQuestion() {
+            const el = elements[currentIdx];
             document.getElementById('target-symbol').innerText = el.s;
-            document.getElementById('answer').innerText = el.n;
-            document.getElementById('answer').style.visibility = 'hidden';
-            document.getElementById('mnemonic-text').innerText = el.m ? `Mnemonic Word: "${el.m}"` : "Keep practicing this section!";
+            document.getElementById('mnemonic-hint').innerText = "";
             
-            const percent = (mastered / elements.length) * 100;
-            document.getElementById('progress-fill').style.width = percent + "%";
-            document.getElementById('stats').innerText = `Mastery: ${mastered}/${elements.length}`;
+            // Generate options
+            let opts = [el.n];
+            while(opts.length < 4) {
+                let randomName = elements[Math.floor(Math.random()*elements.length)].n;
+                if(!opts.includes(randomName)) opts.push(randomName);
+            }
+            opts.sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('options');
+            grid.innerHTML = opts.map(o => `<button class="opt" onclick="check('${o}', this)">${o}</button>`).join('');
         }
 
-        function next(correct) {
-            if (correct) mastered++;
-            currentIndex = (currentIndex + 1) % elements.length;
-            updateDisplay();
+        function check(choice, btn) {
+            const correct = elements[currentIdx].n;
+            if (choice === correct) {
+                btn.classList.add('right');
+                streak++;
+                mastered = Math.max(mastered, currentIdx + 1);
+                updateStats();
+                setTimeout(() => {
+                    currentIdx = (currentIdx + 1) % elements.length;
+                    loadQuestion();
+                }, 600);
+            } else {
+                btn.classList.add('wrong');
+                streak = 0;
+                document.getElementById('mnemonic-hint').innerText = `Hint: Think "${elements[currentIdx].m}"`;
+                updateStats();
+            }
         }
 
-        window.onload = updateDisplay;
+        function updateStats() {
+            document.getElementById('score-text').innerText = `STREAK: ${streak} | MASTERY: ${mastered}/118`;
+            document.getElementById('progress-bar').style.width = (mastered / elements.length * 100) + "%";
+        }
+
+        function reset() { currentIdx = 0; streak = 0; mastered = 0; updateStats(); loadQuestion(); }
+        window.onload = loadQuestion;
     </script>
 </body>
 </html>
