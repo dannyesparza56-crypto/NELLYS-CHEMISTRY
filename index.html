@@ -3,99 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nelly's Elemental Mastery</title>
+    <title>Nelly's Random Element Quiz</title>
     <style>
         :root { --accent: #bb86fc; --bg: #120b1e; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
         .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-top: 20px; text-align: center; }
         
-        #display { background: #000; padding: 30px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; }
-        .symbol { font-size: 4.5rem; font-weight: bold; color: #ffb74d; display: block; }
-        .hint { font-size: 0.85rem; color: #b39ddb; margin-top: 10px; min-height: 20px; font-style: italic; }
+        #display { background: #000; padding: 30px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; transition: 0.3s; }
+        .symbol { font-size: 5rem; font-weight: bold; color: #ffb74d; display: block; }
+        .hint { font-size: 0.85rem; color: #b39ddb; margin-top: 10px; min-height: 20px; }
 
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .opt:hover { border-color: var(--accent); }
-        .opt.right { background: var(--correct); color: #000; border-color: var(--correct); }
-        .opt.wrong { background: var(--wrong); color: white; border-color: var(--wrong); }
+        .opt { background: #2a1b3d; border: 1px solid #443355; color: white; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .opt:hover { border-color: var(--accent); background: #3c2a5c; }
+        .opt.right { background: var(--correct) !important; color: #000; border-color: var(--correct); }
+        .opt.wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong); }
 
-        .progress-container { width: 100%; height: 6px; background: #000; border-radius: 3px; margin-top: 25px; overflow: hidden; }
-        #progress-bar { height: 100%; width: 0%; background: var(--accent); transition: 0.4s; }
-        #score-text { font-size: 0.75rem; margin-top: 8px; color: var(--accent); letter-spacing: 1px; }
+        .stats-container { margin-top: 25px; padding-top: 15px; border-top: 1px solid #3c2a5c; }
+        #score-text { font-size: 0.8rem; color: var(--accent); letter-spacing: 1px; font-weight: bold; }
+        .btn-reset { background: none; border: 1px solid #443355; color: #7c4dff; padding: 8px 15px; border-radius: 8px; font-size: 0.7rem; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="box">
         <div id="display">
-            <span class="symbol" id="target-symbol">H</span>
-            <div class="hint" id="mnemonic-hint"></div>
+            <span class="symbol" id="target-symbol">?</span>
+            <div class="hint" id="mnemonic-hint">Press any button to start</div>
         </div>
 
         <div class="options-grid" id="options">
             </div>
 
-        <div class="progress-container"><div id="progress-bar"></div></div>
-        <div id="score-text">STREAK: 0 | MASTERY: 0/118</div>
-        <button onclick="reset()" style="background:none; border:none; color:#665; font-size:0.7rem; margin-top:20px; cursor:pointer;">RESTART PROGRESS</button>
+        <div class="stats-container">
+            <div id="score-text">STREAK: 0 | BEST: 0</div>
+            <button class="btn-reset" onclick="reset()">SHUFFLE & RESTART</button>
+        </div>
     </div>
 
     <script>
+        // Complete list of 118 Elements
         const elements = [
-            {s:"H", n:"Hydrogen", m:"Hi"}, {s:"He", n:"Helium", m:"He"}, {s:"Li", n:"Lithium", m:"Like"},
-            {s:"Be", n:"Beryllium", m:"Betty"}, {s:"B", n:"Boron", m:"Brought"}, {s:"C", n:"Carbon", m:"Candy"},
-            {s:"N", n:"Nitrogen", m:"Near"}, {s:"O", n:"Oxygen", m:"Old"}, {s:"F", n:"Fluorine", m:"Funny"},
-            {s:"Ne", n:"Neon", m:"Neon"}, {s:"Na", n:"Sodium", m:"Silly"}, {s:"Mg", n:"Magnesium", m:"Monkey"},
-            {s:"Al", n:"Aluminum", m:"Always"}, {s:"Si", n:"Silicon", m:"Sings"}, {s:"P", n:"Phosphorus", m:"Perfect"},
-            {s:"S", n:"Sulfur", m:"Songs"}, {s:"Cl", n:"Chlorine", m:"Clearly"}, {s:"Ar", n:"Argon", m:"Around"},
-            {s:"K", n:"Potassium", m:"Kind"}, {s:"Ca", n:"Calcium", m:"Cats"}
-            // For full 118, add the remaining elements here.
+            {s:"H", n:"Hydrogen"}, {s:"He", n:"Helium"}, {s:"Li", n:"Lithium"}, {s:"Be", n:"Beryllium"}, {s:"B", n:"Boron"}, {s:"C", n:"Carbon"}, {s:"N", n:"Nitrogen"}, {s:"O", n:"Oxygen"}, {s:"F", n:"Fluorine"}, {s:"Ne", n:"Neon"}, {s:"Na", n:"Sodium"}, {s:"Mg", n:"Magnesium"}, {s:"Al", n:"Aluminum"}, {s:"Si", n:"Silicon"}, {s:"P", n:"Phosphorus"}, {s:"S", n:"Sulfur"}, {s:"Cl", n:"Chlorine"}, {s:"Ar", n:"Argon"}, {s:"K", n:"Potassium"}, {s:"Ca", n:"Calcium"}, {s:"Sc", n:"Scandium"}, {s:"Ti", n:"Titanium"}, {s:"V", n:"Vanadium"}, {s:"Cr", n:"Chromium"}, {s:"Mn", n:"Manganese"}, {s:"Fe", n:"Iron"}, {s:"Co", n:"Cobalt"}, {s:"Ni", n:"Nickel"}, {s:"Cu", n:"Copper"}, {s:"Zn", n:"Zinc"}, {s:"Ga", n:"Gallium"}, {s:"Ge", n:"Germanium"}, {s:"As", n:"Arsenic"}, {s:"Se", n:"Selenium"}, {s:"Br", n:"Bromine"}, {s:"Kr", n:"Krypton"}, {s:"Rb", n:"Rubidium"}, {s:"Sr", n:"Strontium"}, {s:"Y", n:"Yttrium"}, {s:"Zr", n:"Zirconium"}, {s:"Nb", n:"Niobium"}, {s:"Mo", n:"Molybdenum"}, {s:"Tc", n:"Technetium"}, {s:"Ru", n:"Ruthenium"}, {s:"Rh", n:"Rhodium"}, {s:"Pd", n:"Palladium"}, {s:"Ag", n:"Silver"}, {s:"Cd", n:"Cadmium"}, {s:"In", n:"Indium"}, {s:"Sn", n:"Tin"}, {s:"Sb", n:"Antimony"}, {s:"Te", n:"Tellurium"}, {s:"I", n:"Iodine"}, {s:"Xe", n:"Xenon"}, {s:"Cs", n:"Cesium"}, {s:"Ba", n:"Barium"}, {s:"La", n:"Lanthanum"}, {s:"Ce", n:"Cerium"}, {s:"Pr", n:"Praseodymium"}, {s:"Nd", n:"Neodymium"}, {s:"Pm", n:"Promethium"}, {s:"Sm", n:"Samarium"}, {s:"Eu", n:"Europium"}, {s:"Gd", n:"Gadolinium"}, {s:"Tb", n:"Terbium"}, {s:"Dy", n:"Dysprosium"}, {s:"Ho", n:"Holmium"}, {s:"Er", n:"Erbium"}, {s:"Tm", n:"Thulium"}, {s:"Yb", n:"Ytterbium"}, {s:"Lu", n:"Lutetium"}, {s:"Hf", n:"Hafnium"}, {s:"Ta", n:"Tantalum"}, {s:"W", n:"Tungsten"}, {s:"Re", n:"Rhenium"}, {s:"Os", n:"Osmium"}, {s:"Ir", n:"Iridium"}, {s:"Pt", n:"Platinum"}, {s:"Au", n:"Gold"}, {s:"Hg", n:"Mercury"}, {s:"Tl", n:"Thallium"}, {s:"Pb", n:"Lead"}, {s:"Bi", n:"Bismuth"}, {s:"Po", n:"Polonium"}, {s:"At", n:"Astatine"}, {s:"Rn", n:"Radon"}, {s:"Fr", n:"Francium"}, {s:"Ra", n:"Radium"}, {s:"Ac", n:"Actinium"}, {s:"Th", n:"Thorium"}, {s:"Pa", n:"Protactinium"}, {s:"U", n:"Uranium"}, {s:"Np", n:"Neptunium"}, {s:"Pu", n:"Plutonium"}, {s:"Am", n:"Americium"}, {s:"Cm", n:"Curium"}, {s:"Bk", n:"Berkelium"}, {s:"Cf", n:"Californium"}, {s:"Es", n:"Einsteinium"}, {s:"Fm", n:"Fermium"}, {s:"Md", n:"Mendelevium"}, {s:"No", n:"Nobelium"}, {s:"Lr", n:"Lawrencium"}, {s:"Rf", n:"Rutherfordium"}, {s:"Db", n:"Dubnium"}, {s:"Sg", n:"Seaborgium"}, {s:"Bh", n:"Bohrium"}, {s:"Hs", n:"Hassium"}, {s:"Mt", n:"Meitnerium"}, {s:"Ds", n:"Darmstadtium"}, {s:"Rg", n:"Roentgenium"}, {s:"Cn", n:"Copernicium"}, {s:"Nh", n:"Nihonium"}, {s:"Fl", n:"Flerovium"}, {s:"Mc", n:"Moscovium"}, {s:"Lv", n:"Livermorium"}, {s:"Ts", n:"Tennessine"}, {s:"Og", n:"Oganesson"}
         ];
 
-        let currentIdx = 0, streak = 0, mastered = 0;
+        let streak = 0, best = 0;
 
-        function loadQuestion() {
-            const el = elements[currentIdx];
-            document.getElementById('target-symbol').innerText = el.s;
-            document.getElementById('mnemonic-hint').innerText = "";
+        function loadRandomQuestion() {
+            const randomIdx = Math.floor(Math.random() * elements.length);
+            const el = elements[randomIdx];
             
-            // Generate options
+            document.getElementById('target-symbol').innerText = el.s;
+            document.getElementById('mnemonic-hint').innerText = "Which element is this?";
+            
+            // Create a pool of 4 options including the correct one
             let opts = [el.n];
             while(opts.length < 4) {
-                let randomName = elements[Math.floor(Math.random()*elements.length)].n;
-                if(!opts.includes(randomName)) opts.push(randomName);
+                let decoy = elements[Math.floor(Math.random() * elements.length)].n;
+                if(!opts.includes(decoy)) opts.push(decoy);
             }
+            // Shuffle options
             opts.sort(() => Math.random() - 0.5);
 
             const grid = document.getElementById('options');
-            grid.innerHTML = opts.map(o => `<button class="opt" onclick="check('${o}', this)">${o}</button>`).join('');
+            grid.innerHTML = opts.map(o => `<button class="opt" onclick="check('${o}', '${el.n}', this)">${o}</button>`).join('');
         }
 
-        function check(choice, btn) {
-            const correct = elements[currentIdx].n;
+        function check(choice, correct, btn) {
             if (choice === correct) {
                 btn.classList.add('right');
                 streak++;
-                mastered = Math.max(mastered, currentIdx + 1);
-                updateStats();
-                setTimeout(() => {
-                    currentIdx = (currentIdx + 1) % elements.length;
-                    loadQuestion();
-                }, 600);
+                if (streak > best) best = streak;
+                document.getElementById('score-text').innerText = `STREAK: ${streak} | BEST: ${best}`;
+                // Auto-load next after short delay
+                setTimeout(loadRandomQuestion, 500);
             } else {
                 btn.classList.add('wrong');
                 streak = 0;
-                document.getElementById('mnemonic-hint').innerText = `Hint: Think "${elements[currentIdx].m}"`;
-                updateStats();
+                document.getElementById('score-text').innerText = `STREAK: ${streak} | BEST: ${best}`;
+                document.getElementById('mnemonic-hint').innerText = `Incorrect! That was ${correct}.`;
+                // Briefly disable buttons to prevent spamming
+                const buttons = document.querySelectorAll('.opt');
+                buttons.forEach(b => b.disabled = true);
+                setTimeout(loadRandomQuestion, 1500);
             }
         }
 
-        function updateStats() {
-            document.getElementById('score-text').innerText = `STREAK: ${streak} | MASTERY: ${mastered}/118`;
-            document.getElementById('progress-bar').style.width = (mastered / elements.length * 100) + "%";
+        function reset() {
+            streak = 0;
+            document.getElementById('score-text').innerText = `STREAK: ${streak} | BEST: ${best}`;
+            loadRandomQuestion();
         }
 
-        function reset() { currentIdx = 0; streak = 0; mastered = 0; updateStats(); loadQuestion(); }
-        window.onload = loadQuestion;
+        window.onload = loadRandomQuestion;
     </script>
 </body>
 </html>
