@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smartass Periodic Table Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --accent: #bb86fc; --bg: #0d0216; --card: #1e142e; --text: #e1bee7; --correct: #03dac6; --wrong: #cf6679; --gold: #ffb74d; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
-        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 50px rgba(0,0,0,0.8); margin-top: 10px; text-align: center; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; overflow-x: hidden; }
+        .box { background: var(--card); width: 95%; max-width: 450px; padding: 20px; border-radius: 24px; border: 1px solid #3c2a5c; box-shadow: 0 10px 50px rgba(0,0,0,0.8); margin-top: 10px; text-align: center; position: relative; z-index: 1; }
         
         h1 { font-size: 1.2rem; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
         .cat-select { width: 100%; padding: 12px; background: #000; border: 2px solid var(--accent); color: var(--accent); border-radius: 12px; margin-bottom: 15px; font-weight: bold; cursor: pointer; }
 
-        #display { background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; min-height: 140px; position: relative; }
+        #display { background: #000; padding: 25px; border-radius: 15px; border: 2px solid var(--accent); margin-bottom: 20px; min-height: 140px; }
         .symbol { font-size: 5.5rem; font-weight: bold; color: var(--gold); display: block; line-height: 1; text-shadow: 0 0 15px rgba(255, 183, 77, 0.4); }
         .hint-box { margin-top: 10px; }
         .rhyme-text { color: var(--gold); font-size: 1.1rem; font-weight: bold; font-style: italic; display: block; margin-bottom: 5px; }
@@ -24,23 +25,13 @@
         .opt.right { background: var(--correct) !important; color: #000; }
         .opt.wrong { background: var(--wrong) !important; }
 
-        #smartass-console { 
-            margin: 15px 0; 
-            min-height: 40px; 
-            color: #ff4081; 
-            font-weight: 800; 
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        #smartass-console { margin: 15px 0; min-height: 40px; color: #ff4081; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
         .stats { font-size: 0.9rem; color: var(--accent); font-weight: bold; border-top: 1px solid #3c2a5c; padding-top: 10px; }
     </style>
 </head>
 <body>
     <div class="box">
         <h1>Smartass Edition</h1>
-        
         <select id="family-filter" class="cat-select" onchange="resetQuiz()">
             <option value="all">ALL 118 ELEMENTS</option>
             <option value="Alkali metal">ALKALI METALS</option>
@@ -63,9 +54,7 @@
         </div>
 
         <div class="options-grid" id="options"></div>
-        
         <div id="smartass-console"></div>
-        
         <div class="stats" id="score-text">STREAK: 0 | BEST: 0</div>
     </div>
 
@@ -93,22 +82,33 @@
 
         let streak = 0, best = 0;
 
+        function fireConfetti(isMega) {
+            if (isMega) {
+                const end = Date.now() + (2 * 1000);
+                const colors = ['#bb86fc', '#03dac6', '#ffb74d'];
+                (function frame() {
+                    confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                    confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+            } else {
+                confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ['#bb86fc', '#03dac6'] });
+            }
+        }
+
         function loadQuestion() {
             const family = document.getElementById('family-filter').value;
             const filtered = family === "all" ? elements : elements.filter(e => e.g === family);
             const el = filtered[Math.floor(Math.random() * filtered.length)];
-            
             document.getElementById('target-symbol').innerText = el.s;
             document.getElementById('rhyme-hint').innerText = `Rhymes with: ${el.r}`;
             document.getElementById('family-hint').innerText = el.g;
-
             let opts = [el.n];
             while(opts.length < 4) {
                 let decoy = elements[Math.floor(Math.random() * elements.length)].n;
                 if(!opts.includes(decoy)) opts.push(decoy);
             }
             opts.sort(() => Math.random() - 0.5);
-
             const grid = document.getElementById('options');
             grid.innerHTML = opts.map(o => `<button class="opt" onclick="check('${o}', '${el.n}', this)">${o}</button>`).join('');
         }
@@ -119,16 +119,23 @@
                 btn.classList.add('right');
                 streak++;
                 if (streak > best) best = streak;
+
+                // Regular Confetti
+                fireConfetti(false);
                 
+                // Smartass Milestones + Mega Confetti
                 if (streak === 5) {
                     consoleBox.innerText = "you finally got a streak see if you can get to 30";
                 } else if (streak === 10) {
                     consoleBox.innerText = "Okay smartass";
+                    fireConfetti(true);
                     setTimeout(() => { if(streak >= 10 && streak < 20) consoleBox.innerText = ""; }, 10000);
                 } else if (streak === 20) {
                     consoleBox.innerText = "alright we get it lets see if you can get 30";
+                    fireConfetti(true);
                 } else if (streak >= 30) {
                     consoleBox.innerText = "8====D you fucking this game";
+                    fireConfetti(true);
                 }
 
                 document.getElementById('score-text').innerText = `STREAK: ${streak} | BEST: ${best}`;
